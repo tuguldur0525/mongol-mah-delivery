@@ -15,13 +15,13 @@ export function getWireClient(): Wire {
   return cached;
 }
 
-/** Wire amounts are integer minor units: 50,000 = 500.00 MNT. */
+/** MNT is a zero-decimal currency in Wire: 9,000 MNT is sent as 9000. */
 export function mntToMinor(amountMnt: number): number {
-  return Math.round(amountMnt * 100);
+  return Math.round(amountMnt);
 }
 
 export function minorToMnt(minor: number): number {
-  return Math.round(minor / 100);
+  return Math.round(minor);
 }
 
 export function allowedOperators(): string[] | undefined {
