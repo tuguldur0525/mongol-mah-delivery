@@ -11,6 +11,7 @@ const links = [
   { href: "/products?cat=khon", label: "Хонь" },
   { href: "/products?cat=yamaa", label: "Ямаа" },
   { href: "/products?cat=takhia", label: "Тахиа" },
+  { href: "/track", label: "Захиалга хайх" },
 ];
 
 export function Header() {

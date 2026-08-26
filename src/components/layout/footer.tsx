@@ -58,7 +58,7 @@ export function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/order" className="text-sm text-mute hover:text-cream">
+                <Link href="/track" className="text-sm text-mute hover:text-cream">
                   Захиалга хайх
                 </Link>
               </li>

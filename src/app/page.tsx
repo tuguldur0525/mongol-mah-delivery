@@ -44,7 +44,7 @@ export default async function HomePage() {
               <Link href="/products" className="btn-primary">
                 Бүтээгдэхүүн үзэх
               </Link>
-              <Link href="/order" className="btn-secondary">
+              <Link href="/track" className="btn-secondary">
                 Захиалга хайх
               </Link>
             </div>
