@@ -12,7 +12,13 @@ export type CheckoutResult =
   | { ok: false; error: string };
 
 function siteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (configuredUrl) return configuredUrl.replace(/\/$/, "");
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) return `https://${vercelUrl}`;
+
+  return "http://localhost:3000";
 }
 
 function generateOrderNumber(): string {
@@ -111,7 +117,7 @@ export async function createOrderAndPayment(
   // 5. Create pending order + items
   const orderNumber = generateOrderNumber();
   const paymentAttemptId = randomBytes(12).toString("hex");
-  const paymentReference = `MAH-${orderNumber}-${Date.now().toString(36)}`;
+  const paymentReference = `Mongol Mah ${orderNumber}`;
 
   const { data: order, error: orderError } = await supabase
     .from("orders")
@@ -155,6 +161,7 @@ export async function createOrderAndPayment(
       orderNumber,
       attemptId: paymentAttemptId,
       amountMnt: total,
+      description: paymentReference,
       customerName: parsedCustomer.data.customer_name,
       successUrl: `${base}/payment/success?order=${orderNumber}`,
       cancelUrl: `${base}/payment/cancel?order=${orderNumber}`,
@@ -222,6 +229,7 @@ export async function retryPayment(
       orderNumber: order.order_number,
       attemptId: paymentAttemptId,
       amountMnt: order.total_amount,
+      description: `Mongol Mah ${order.order_number}`,
       customerName: order.customer_name,
       successUrl: `${base}/payment/success?order=${order.order_number}`,
       cancelUrl: `${base}/payment/cancel?order=${order.order_number}`,

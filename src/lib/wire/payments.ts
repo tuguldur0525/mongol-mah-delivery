@@ -1,5 +1,5 @@
 import "server-only";
-import type { PaymentIntent } from "@buildry-wire/wire";
+import type { PaymentIntent, PaymentIntentCreateParams } from "@buildry-wire/wire";
 import { getWireClient, allowedOperators, mntToMinor } from "./client";
 
 export type CreatePaymentResult = {
@@ -18,6 +18,7 @@ export async function createOrderPayment(params: {
   orderNumber: string;
   attemptId: string;
   amountMnt: number;
+  description: string;
   customerName: string;
   successUrl: string;
   cancelUrl: string;
@@ -25,16 +26,19 @@ export async function createOrderPayment(params: {
   const client = getWireClient();
   const operators = allowedOperators();
 
-  const pi = await client.paymentIntents.create({
+  const paymentIntentParams: PaymentIntentCreateParams & { description: string } = {
     amount: mntToMinor(params.amountMnt),
     currency: "MNT",
+    description: params.description,
     ...(operators ? { allowed_operators: operators } : {}),
     metadata: {
       order_id: params.orderId,
       order_number: params.orderNumber,
+      transaction_description: params.description,
     },
     idempotencyKey: `pi-${params.orderNumber}-${params.attemptId}`,
-  });
+  };
+  const pi = await client.paymentIntents.create(paymentIntentParams);
 
   // Checkout sessions can only be created on requires_payment_method intents.
   const session = await client.request<{
