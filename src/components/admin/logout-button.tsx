@@ -9,7 +9,7 @@ export function LogoutButton() {
     <button
       onClick={() => start(() => logout())}
       disabled={pending}
-      className="rounded-sm border border-line px-3 py-1.5 text-xs font-medium text-mute transition-colors hover:border-bone hover:text-cream"
+      className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
     >
       {pending ? "..." : "Гарах"}
     </button>

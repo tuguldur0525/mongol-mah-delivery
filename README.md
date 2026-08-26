@@ -49,8 +49,8 @@ cp .env.example .env.local   # fill in values
    - `supabase/migrations/0002_rpcs.sql`
    - `supabase/migrations/0003_rls.sql`
    - `supabase/migrations/0004_seed.sql`
-3. Copy `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and
-   `SUPABASE_SERVICE_ROLE_KEY` from Project Settings → API.
+3. Copy `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and
+   `NEXT_PUBLIC_SUPABASE_SECRET_KEY` from Project Settings → API.
 
 ### 3. Admin user
 
@@ -88,7 +88,7 @@ npm run dev
 ```
 Checkout → server validates cart/prices/stock
         → creates order (pending) + order_items (price snapshot)
-        → Wire PaymentIntent + checkout session (idempotency keys)
+            → Wire PaymentIntent + checkout session (per-attempt idempotency keys)
         → redirect to pay.wire.mn hosted checkout
         → customer pays (QR / bank deeplink)
         → Wire webhook → signature verify → idempotency claim

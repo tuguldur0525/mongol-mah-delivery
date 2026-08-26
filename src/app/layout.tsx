@@ -1,24 +1,12 @@
-import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-
-const playfair = Playfair_Display({
-  subsets: ["latin", "cyrillic"],
-  variable: "--font-playfair",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin", "cyrillic"],
-  variable: "--font-inter",
-  display: "swap",
-});
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata = {
-  title: "МАХ — Шинэ чанартай мах, гэрт хүргэлттэй",
+  title: "Монгол Мах — Шинэ мах онлайнаар захиалах",
   description:
-    "Үхэр, адуу, хонь, ямаа, тахианы махыг малчны хотоос гэрт тань хүргэнэ. Онлайн захиалга, хялбар төлбөр.",
+    "Үхэр, адуу, хонь, ямаа, тахианы шинэ мах килограммаар онлайнаар захиалаад Улаанбаатар хотод гэртээ хүлээн авна.",
 };
 
 export default function RootLayout({
@@ -27,11 +15,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="mn" className={`${playfair.variable} ${inter.variable}`}>
+    <html lang="mn" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Exact same Google Fonts request as mongol-mah.lovable.app */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        />
+        {/* Avoid FOUC for theme - same logic as ThemeProvider */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{const t=localStorage.getItem("theme");const p=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";const v=t||p;document.documentElement.setAttribute("data-theme",v)}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col antialiased">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <ThemeProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

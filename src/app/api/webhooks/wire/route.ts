@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   // Handle endpoint verification ping the same way (it is a signed event).
   const supabase = createAdminClient();
 
-  // Idempotency: claim the event via unique constraint.
+  // Claim new events, but allow a previous failed attempt to be retried.
   const { error: insertError } = await supabase
     .from("webhook_events")
     .insert({
@@ -37,8 +37,21 @@ export async function POST(req: NextRequest) {
     });
 
   if (insertError) {
-    // Duplicate delivery — already claimed/processed.
-    return NextResponse.json({ received: true, duplicate: true });
+    const { data: existingEvent } = await supabase
+      .from("webhook_events")
+      .select("processed_at")
+      .eq("provider", "wire")
+      .eq("external_event_id", event.id)
+      .maybeSingle();
+
+    if (existingEvent?.processed_at) {
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+
+    if (!existingEvent) {
+      console.error("[webhook] event claim failed:", insertError.message);
+      return NextResponse.json({ error: "Event claim failed" }, { status: 500 });
+    }
   }
 
   try {
@@ -61,13 +74,16 @@ export async function POST(req: NextRequest) {
             .from("orders")
             .select("id")
             .eq("id", pi.metadata.order_id)
+            .eq("wire_payment_id", pi.id)
             .maybeSingle();
           orderId = byMeta?.id ?? null;
         }
 
         if (!orderId) {
           console.error("[webhook] no order found for payment", pi.id);
-          break;
+          // Keep the event unprocessed so reconciliation or a later database
+          // write can allow the provider to retry delivery.
+          return NextResponse.json({ received: true, processed: false });
         }
 
         const result = await fulfillPaidOrder(orderId, pi.id);
@@ -88,10 +104,14 @@ export async function POST(req: NextRequest) {
       case WIRE_EVENTS.PAYMENT_CANCELED: {
         const pi = eventPaymentIntent(event);
         if (pi) {
-          await markOrderPaymentState(
+          const updated = await markOrderPaymentState(
             pi.id,
             event.type === WIRE_EVENTS.PAYMENT_CANCELED ? "cancelled" : "failed",
           );
+          if (!updated) {
+            console.error("[webhook] payment state update failed", pi.id);
+            return NextResponse.json({ received: true, processed: false });
+          }
         }
         break;
       }

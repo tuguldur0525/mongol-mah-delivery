@@ -36,61 +36,46 @@ export default async function AdminDashboardPage() {
   const lowStock = lowStockRes.data ?? [];
 
   const cards = [
-    { label: "ӨНӨӨДРИЙН ЗАХИАЛГА", value: String(today.length), color: "text-cream" },
-    { label: "ӨНӨӨДРИЙН БОРЛУУЛАЛТ", value: formatMnt(todaySales), color: "text-cream" },
-    { label: "НИЙТ БОРЛУУЛАЛТ", value: formatMnt(totalSales), color: "text-cream" },
-    { label: "ХҮЛЭЭГДЭЖ БУЙ ТӨЛБӨР", value: String(pendingPayments), color: "text-ember" },
-    { label: "БЭЛТГЭЖ БАЙНА", value: String(preparing), color: "text-sun" },
-    { label: "ХҮРГЭЛТЭНД", value: String(delivering), color: "text-fresh" },
+    { label: "Өнөөдрийн захиалга", value: String(today.length) },
+    { label: "Өнөөдрийн борлуулалт", value: formatMnt(todaySales) },
+    { label: "Нийт борлуулалт", value: formatMnt(totalSales) },
+    { label: "Хүлээж буй төлбөр", value: String(pendingPayments) },
+    { label: "Бэлтгэж байна", value: String(preparing) },
+    { label: "Хүргэлтэнд", value: String(delivering) },
   ];
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold">Хяналтын самбар</h1>
+      <p className="eyebrow text-primary">Хяналтын самбар</p>
+      <h1 className="mt-2 text-4xl text-display">Тойм</h1>
+      <p className="mt-3 text-sm text-muted-foreground">Өнөөдрийн борлуулалт, захиалгын төлөв, үлдэгдэл нэг дор.</p>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-3">
+      <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-6">
         {cards.map((c) => (
-          <div key={c.label} className="rounded-md border border-line bg-surface p-5">
-            <p className="text-[0.625rem] font-bold uppercase tracking-widest text-mute">
-              {c.label}
-            </p>
-            <p className={`mt-2 font-display text-2xl font-bold ${c.color}`}>
-              {c.value}
-            </p>
+          <div key={c.label} className="rounded-xl border border-border bg-card p-6 shadow-card">
+            <p className="eyebrow text-muted-foreground">{c.label}</p>
+            <p className="mt-3 text-display text-2xl">{c.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-2">
-        <section className="rounded-md border border-line bg-surface p-5">
+      <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <section className="rounded-xl border border-border bg-card p-6 shadow-card">
           <div className="flex items-center justify-between">
-            <h2 className="text-[0.6875rem] font-bold uppercase tracking-widest text-bone">
-              Бага үлдэгдэл
-            </h2>
-            <Link href="/admin/inventory" className="text-xs text-mute hover:text-cream">
-              →
+            <h2 className="eyebrow">Бага үлдэгдэл</h2>
+            <Link href="/admin/inventory" className="text-xs font-medium text-primary hover:underline">
+              Бүгдийг харах →
             </Link>
           </div>
           {lowStock.length === 0 ? (
-            <p className="mt-4 text-sm text-mute">Бүх үлдэгдэл хангалттай.</p>
+            <p className="mt-6 rounded-lg bg-muted p-6 text-center text-sm text-muted-foreground">Бүх үлдэгдэл хангалттай.</p>
           ) : (
-            <ul className="mt-4 divide-y divide-line">
+            <ul className="mt-6 divide-y divide-border">
               {lowStock.slice(0, 8).map((p) => (
-                <li
-                  key={p.id}
-                  className="flex items-center justify-between py-2.5 text-sm"
-                >
-                  <span>{p.name}</span>
-                  <span
-                    className={
-                      p.stock_kg <= 0
-                        ? "tag tag-red"
-                        : "tag tag-gold"
-                    }
-                  >
-                    {p.stock_kg <= 0
-                      ? "ДУУССАН"
-                      : `${formatKg(Number(p.stock_kg))}`}
+                <li key={p.id} className="flex items-center justify-between py-3 text-sm">
+                  <span className="font-medium">{p.name}</span>
+                  <span className={p.stock_kg <= 0 ? "tag tag-red" : "tag tag-gold"}>
+                    {p.stock_kg <= 0 ? "ДУУССАН" : `${formatKg(Number(p.stock_kg))}`}
                   </span>
                 </li>
               ))}
@@ -98,33 +83,29 @@ export default async function AdminDashboardPage() {
           )}
         </section>
 
-        <section className="rounded-md border border-line bg-surface p-5">
-          <h2 className="text-[0.6875rem] font-bold uppercase tracking-widest text-bone">
-            Түүвэр
-          </h2>
-          <ul className="mt-4 space-y-2.5 text-sm">
+        <section className="rounded-xl border border-border bg-card p-6 shadow-card">
+          <h2 className="eyebrow">Түүвэр</h2>
+          <ul className="mt-6 space-y-3 text-sm">
             <li className="flex justify-between">
-              <span className="text-mute">Нийт захиалга</span>
-              <span>{orders.length}</span>
+              <span className="text-muted-foreground">Нийт захиалга</span>
+              <span className="font-semibold">{orders.length}</span>
             </li>
             <li className="flex justify-between">
-              <span className="text-mute">Төлөгдсөн</span>
-              <span>{paidOrders.length}</span>
+              <span className="text-muted-foreground">Төлөгдсөн</span>
+              <span className="font-semibold">{paidOrders.length}</span>
             </li>
             <li className="flex justify-between">
-              <span className="text-mute">Дундаж дүн</span>
-              <span>
-                {paidOrders.length
-                  ? formatMnt(Math.round(totalSales / paidOrders.length))
-                  : "—"}
+              <span className="text-muted-foreground">Дундаж дүн</span>
+              <span className="font-semibold">
+                {paidOrders.length ? formatMnt(Math.round(totalSales / paidOrders.length)) : "—"}
               </span>
             </li>
             <li className="flex justify-between">
-              <span className="text-mute">Бага үлдэгдэл</span>
-              <span>{lowStock.length}</span>
+              <span className="text-muted-foreground">Бага үлдэгдэл</span>
+              <span className="font-semibold">{lowStock.length}</span>
             </li>
           </ul>
-          <Link href="/admin/orders/new" className="btn-primary mt-5 block w-full">
+          <Link href="/admin/orders/new" className="btn-primary mt-6 w-full">
             Гараар захиалга үүсгэх
           </Link>
         </section>

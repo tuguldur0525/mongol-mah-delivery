@@ -110,6 +110,7 @@ export async function createOrderAndPayment(
 
   // 5. Create pending order + items
   const orderNumber = generateOrderNumber();
+  const paymentAttemptId = randomBytes(12).toString("hex");
   const paymentReference = `MAH-${orderNumber}-${Date.now().toString(36)}`;
 
   const { data: order, error: orderError } = await supabase
@@ -125,6 +126,7 @@ export async function createOrderAndPayment(
       total_amount: total,
       currency: "MNT",
       payment_method: "wire",
+      payment_attempt_id: paymentAttemptId,
       payment_status: "pending",
       order_status: "pending_payment",
       payment_reference: paymentReference,
@@ -151,16 +153,19 @@ export async function createOrderAndPayment(
     const payment = await createOrderPayment({
       orderId: order.id,
       orderNumber,
+      attemptId: paymentAttemptId,
       amountMnt: total,
       customerName: parsedCustomer.data.customer_name,
       successUrl: `${base}/payment/success?order=${orderNumber}`,
       cancelUrl: `${base}/payment/cancel?order=${orderNumber}`,
     });
 
-    await supabase
+    const { error: paymentIdError } = await supabase
       .from("orders")
       .update({ wire_payment_id: payment.paymentIntent.id })
       .eq("id", order.id);
+
+    if (paymentIdError) throw paymentIdError;
 
     return { ok: true, redirectUrl: payment.checkoutUrl, orderNumber };
   } catch (e) {
@@ -211,19 +216,27 @@ export async function retryPayment(
 
   try {
     const base = siteUrl();
+    const paymentAttemptId = randomBytes(12).toString("hex");
     const payment = await createOrderPayment({
       orderId: order.id,
       orderNumber: order.order_number,
+      attemptId: paymentAttemptId,
       amountMnt: order.total_amount,
       customerName: order.customer_name,
       successUrl: `${base}/payment/success?order=${order.order_number}`,
       cancelUrl: `${base}/payment/cancel?order=${order.order_number}`,
     });
 
-    await supabase
+    const { error: updateError } = await supabase
       .from("orders")
-      .update({ wire_payment_id: payment.paymentIntent.id, payment_status: "pending" })
+      .update({
+        wire_payment_id: payment.paymentIntent.id,
+        payment_attempt_id: paymentAttemptId,
+        payment_status: "pending",
+      })
       .eq("id", order.id);
+
+    if (updateError) throw updateError;
 
     return { ok: true, redirectUrl: payment.checkoutUrl };
   } catch (e) {

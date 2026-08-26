@@ -16,6 +16,7 @@ export type CreatePaymentResult = {
 export async function createOrderPayment(params: {
   orderId: string;
   orderNumber: string;
+  attemptId: string;
   amountMnt: number;
   customerName: string;
   successUrl: string;
@@ -31,7 +32,7 @@ export async function createOrderPayment(params: {
       order_id: params.orderId,
       order_number: params.orderNumber,
     },
-    idempotencyKey: `pi-${params.orderNumber}`,
+    idempotencyKey: `pi-${params.orderNumber}-${params.attemptId}`,
   });
 
   // Checkout sessions can only be created on requires_payment_method intents.
@@ -46,7 +47,7 @@ export async function createOrderPayment(params: {
       success_url: params.successUrl,
       cancel_url: params.cancelUrl,
     },
-    idempotencyKey: `cs-${params.orderNumber}`,
+    idempotencyKey: `cs-${params.orderNumber}-${params.attemptId}`,
   });
 
   return {

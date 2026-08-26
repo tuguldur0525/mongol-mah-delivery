@@ -57,9 +57,9 @@ export async function fulfillPaidOrder(
 export async function markOrderPaymentState(
   wirePaymentId: string,
   paymentStatus: "failed" | "cancelled",
-): Promise<void> {
+): Promise<boolean> {
   const supabase = createAdminClient();
-  await supabase
+  const { error } = await supabase
     .from("orders")
     .update({
       payment_status: paymentStatus,
@@ -68,4 +68,9 @@ export async function markOrderPaymentState(
     })
     .eq("wire_payment_id", wirePaymentId)
     .eq("payment_status", "pending");
+  if (error) {
+    console.error("[payment] payment state update failed:", error.message);
+    return false;
+  }
+  return true;
 }

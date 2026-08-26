@@ -3,88 +3,125 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/store/cart";
-
-const links = [
-  { href: "/products", label: "Бүтээгдэхүүн" },
-  { href: "/products?cat=uher", label: "Үхэр" },
-  { href: "/products?cat=aduu", label: "Адуу" },
-  { href: "/products?cat=khon", label: "Хонь" },
-  { href: "/products?cat=yamaa", label: "Ямаа" },
-  { href: "/products?cat=takhia", label: "Тахиа" },
-  { href: "/track", label: "Захиалга хайх" },
-];
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Header() {
   const pathname = usePathname();
   const count = useCart((s) => s.items.length);
   if (pathname.startsWith("/admin")) return null;
 
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(href + "/") || pathname.startsWith(href + "?");
+  };
+
   return (
-    <header className="sticky top-0 z-50 bg-ink/95 backdrop-blur">
-      <div className="accent-line" />
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 lg:h-16">
-        <Link href="/" className="flex items-center gap-2">
-          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
-            <rect width="40" height="40" rx="4" fill="#c8102e" />
-            <path
-              d="M10 28 C10 14, 16 10, 20 10 C24 10, 30 14, 30 28"
-              stroke="#f0ebe2"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              fill="none"
-            />
-            <path
-              d="M14 26 C14 18, 17 15, 20 15 C23 15, 26 18, 26 26"
-              fill="rgba(240,235,226,0.15)"
-            />
-          </svg>
-          <div className="font-display text-lg font-bold tracking-wide text-cream">
-            МАХ
-            <span className="ml-1 text-[0.65em] font-normal tracking-widest text-mute">
-              DELIVERY
+    <div className="sticky top-0 z-40">
+      {/* Marquee - like mongol-mah */}
+      <div className="overflow-hidden border-b border-border surface-blood">
+        <div className="marquee-track py-2">
+          <div className="flex shrink-0 items-center">
+            <span className="flex items-center gap-6 whitespace-nowrap px-6 eyebrow">
+              Малчнаас шууд · Шинэ мах<span className="opacity-60">✦</span>
+            </span>
+            <span className="flex items-center gap-6 whitespace-nowrap px-6 eyebrow">
+              Улаанбаатар хотод 24 цагийн дотор хүргэлт<span className="opacity-60">✦</span>
+            </span>
+            <span className="flex items-center gap-6 whitespace-nowrap px-6 eyebrow">
+              Килограммаар нарийн хэрчиж бэлтгэнэ<span className="opacity-60">✦</span>
+            </span>
+            <span className="flex items-center gap-6 whitespace-nowrap px-6 eyebrow">
+              Банкны шилжүүлгээр хялбар төлбөр<span className="opacity-60">✦</span>
             </span>
           </div>
-        </Link>
-
-        <nav className="hidden items-center gap-1 md:flex">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={`px-3 py-1.5 text-[0.8125rem] font-medium transition-colors ${
-                pathname === l.href || pathname.startsWith(l.href + "?")
-                  ? "text-cream"
-                  : "text-bone hover:text-cream"
-              }`}
-            >
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-
-        <Link
-          href="/cart"
-          className="flex items-center gap-2 rounded-md border border-line px-3 py-1.5 text-sm transition-colors hover:border-bone"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <path d="M16 10a4 4 0 01-8 0" />
-          </svg>
-          {count > 0 && (
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-blood px-1.5 text-[11px] font-bold text-white">
-              {count}
+          <div className="flex shrink-0 items-center" aria-hidden="true">
+            <span className="flex items-center gap-6 whitespace-nowrap px-6 eyebrow">
+              Малчнаас шууд · Шинэ мах<span className="opacity-60">✦</span>
             </span>
-          )}
-        </Link>
+            <span className="flex items-center gap-6 whitespace-nowrap px-6 eyebrow">
+              Улаанбаатар хотод 24 цагийн дотор хүргэлт<span className="opacity-60">✦</span>
+            </span>
+            <span className="flex items-center gap-6 whitespace-nowrap px-6 eyebrow">
+              Килограммаар нарийн хэрчиж бэлтгэнэ<span className="opacity-60">✦</span>
+            </span>
+            <span className="flex items-center gap-6 whitespace-nowrap px-6 eyebrow">
+              Банкны шилжүүлгээр хялбар төлбөр<span className="opacity-60">✦</span>
+            </span>
+          </div>
+        </div>
       </div>
-    </header>
+
+      <header className="border-b border-border bg-background/85 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4">
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="grid size-9 place-items-center rounded-sm surface-blood text-display text-base">
+              М
+            </span>
+            <span className="leading-none">
+              <span className="text-display text-xl tracking-tight">Монгол Мах</span>
+              <span className="mt-1 block eyebrow text-primary">premium meat co.</span>
+            </span>
+          </Link>
+
+          <nav className="ml-8 hidden items-center gap-1 md:flex">
+            <Link
+              href="/"
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${isActive("/") ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              Эхлэл
+            </Link>
+            <Link
+              href="/products"
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${isActive("/products") ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              Бүтээгдэхүүн
+            </Link>
+            <Link
+              href="/track"
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${isActive("/track") ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              Захиалга хайх
+            </Link>
+            <Link
+              href="/about"
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${isActive("/about") ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              Бидний тухай
+            </Link>
+          </nav>
+
+          <div className="ml-auto flex items-center gap-1">
+            <ThemeToggle />
+            <Link
+              aria-label="Бүтээгдэхүүн хайх"
+              href="/products"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.34-4.34" />
+              </svg>
+            </Link>
+            <Link
+              href="/cart"
+              className="inline-flex h-8 items-center gap-2 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="m15 11-1 9" />
+                <path d="m19 11-4-7" />
+                <path d="M2 11h20" />
+                <path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4" />
+              </svg>
+              <span className="hidden sm:inline">Сагс</span>
+              {count > 0 && (
+                <span className="grid size-5 place-items-center rounded-full bg-white text-[11px] font-bold text-primary">
+                  {count}
+                </span>
+              )}
+            </Link>
+          </div>
+        </div>
+      </header>
+    </div>
   );
 }
