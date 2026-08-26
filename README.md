@@ -75,8 +75,9 @@ insert into public.profiles (id, is_admin) values ('<user-uuid>', true);
    `payment_intent.succeeded`, `payment_intent.payment_failed`,
    `payment_intent.canceled`. Copy the `whsec_...` secret into
    `WIRE_WEBHOOK_SECRET`.
-3. Test mode uses `WIRE_ALLOWED_OPERATORS=sandbox`; for production use your
-   live operators and an `sk_live_...` key.
+3. `WIRE_ALLOWED_OPERATORS` is optional. Leave it empty to let Wire select an
+   available operator, or set it to the exact operator slug(s) shown in your
+   Wire project. Do not use `sandbox` with a live API key.
 4. Set `NEXT_PUBLIC_SITE_URL` to your public HTTPS URL — it is used for Wire
    `success_url` / `cancel_url` redirects.
 

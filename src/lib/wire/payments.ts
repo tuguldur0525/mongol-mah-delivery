@@ -23,11 +23,12 @@ export async function createOrderPayment(params: {
   cancelUrl: string;
 }): Promise<CreatePaymentResult> {
   const client = getWireClient();
+  const operators = allowedOperators();
 
   const pi = await client.paymentIntents.create({
     amount: mntToMinor(params.amountMnt),
     currency: "MNT",
-    allowed_operators: allowedOperators(),
+    ...(operators ? { allowed_operators: operators } : {}),
     metadata: {
       order_id: params.orderId,
       order_number: params.orderNumber,

@@ -24,9 +24,10 @@ export function minorToMnt(minor: number): number {
   return Math.round(minor / 100);
 }
 
-export function allowedOperators(): string[] {
-  return (process.env.WIRE_ALLOWED_OPERATORS ?? "sandbox")
+export function allowedOperators(): string[] | undefined {
+  const operators = (process.env.WIRE_ALLOWED_OPERATORS ?? "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
+  return operators.length > 0 ? operators : undefined;
 }
