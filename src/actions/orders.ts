@@ -15,6 +15,13 @@ function siteUrl() {
   const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
   if (configuredUrl) return configuredUrl.replace(/\/$/, "");
 
+  const productionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (productionUrl) return `https://${productionUrl}`;
+
+  if (process.env.VERCEL_ENV === "production") {
+    return "https://mongol-mah.vercel.app";
+  }
+
   const vercelUrl = process.env.VERCEL_URL?.trim();
   if (vercelUrl) return `https://${vercelUrl}`;
 

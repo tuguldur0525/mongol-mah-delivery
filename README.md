@@ -78,8 +78,9 @@ insert into public.profiles (id, is_admin) values ('<user-uuid>', true);
 3. `WIRE_ALLOWED_OPERATORS` is optional. Leave it empty to let Wire select an
    available operator, or set it to the exact operator slug(s) shown in your
    Wire project. Do not use `sandbox` with a live API key.
-4. Set `NEXT_PUBLIC_SITE_URL` to your public HTTPS URL — it is used for Wire
-   `success_url` / `cancel_url` redirects.
+4. Set `NEXT_PUBLIC_SITE_URL` to your public HTTPS URL
+   (`https://mongol-mah.vercel.app`) — it is used for Wire `success_url` /
+   `cancel_url` redirects. Do not use a protected Vercel preview URL.
 
 ### 5. Run
 
