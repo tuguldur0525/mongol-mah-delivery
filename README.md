@@ -8,6 +8,7 @@ atomic inventory management and an admin dashboard.
 ## Features
 
 ### Customer
+
 - Browse categories (Үхэр / Адуу / Хонь / Ямаа / Тахиа) and products
 - Quantity in kg (0.5 presets + custom), stock-aware validation
 - Guest checkout — no login required
@@ -16,6 +17,7 @@ atomic inventory management and an admin dashboard.
 - Payment cancel page with retry (no duplicate orders)
 
 ### Admin (`/admin`)
+
 - Dashboard: today's orders, sales, pending payments, low-stock alerts
 - Order management: search/filter, status changes, cancel (auto stock restore)
 - Manual order creation (paid orders deduct stock atomically)
@@ -23,6 +25,7 @@ atomic inventory management and an admin dashboard.
 - Inventory: add stock, adjustments, full transaction history
 
 ### Payment security model
+
 - Order totals are always computed **server-side** from DB prices
 - Payment success is confirmed **only** via verified Wire webhook + API
   double-check of the PaymentIntent (`status === "succeeded"`)
@@ -99,14 +102,14 @@ Checkout → server validates cart/prices/stock
 
 ## Key files
 
-| Path | Purpose |
-| --- | --- |
-| `src/lib/wire/` | Server-only Wire client, payments, webhook verification |
-| `src/app/api/webhooks/wire/route.ts` | Verified + idempotent webhook handler |
-| `src/actions/orders.ts` | Guest order creation, retry payment |
-| `src/actions/payments.ts` | Payment fulfillment (RPC call) |
-| `src/actions/inventory.ts` | Stock ops, cancel, manual orders |
-| `supabase/migrations/0002_rpcs.sql` | Atomic stock/payment RPCs |
+| Path                                 | Purpose                                                 |
+| ------------------------------------ | ------------------------------------------------------- |
+| `src/lib/wire/`                      | Server-only Wire client, payments, webhook verification |
+| `src/app/api/webhooks/wire/route.ts` | Verified + idempotent webhook handler                   |
+| `src/actions/orders.ts`              | Guest order creation, retry payment                     |
+| `src/actions/payments.ts`            | Payment fulfillment (RPC call)                          |
+| `src/actions/inventory.ts`           | Stock ops, cancel, manual orders                        |
+| `supabase/migrations/0002_rpcs.sql`  | Atomic stock/payment RPCs                               |
 
 ## Test cases covered
 
