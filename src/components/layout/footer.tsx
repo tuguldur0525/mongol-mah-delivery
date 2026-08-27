@@ -1,60 +1,202 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
 
+const socials = [
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com",
+    icon: (
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com",
+    icon: (
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        aria-hidden="true"
+      >
+        <rect x="2" y="2" width="20" height="20" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    label: "YouTube",
+    href: "https://www.youtube.com",
+    icon: (
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d="M23 12s0-3.5-.5-5c-.3-1-1-1.5-2-1.7C18 5 12 5 12 5s-6 0-8.5.3c-1 .2-1.7.7-2 1.7C1 8.5 1 12 1 12s0 3.5.5 5c.3 1 1 1.5 2 1.7C6 19 12 19 12 19s6 0 8.5-.3c1-.2 1.7-.7 2-1.7.5-1.5.5-5 .5-5zM10 15V9l6 3-6 3z" />
+      </svg>
+    ),
+  },
+  {
+    label: "TikTok",
+    href: "https://www.tiktok.com",
+    icon: (
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        aria-hidden="true"
+      >
+        <path d="M9 12a4 4 0 1 0 4 4V9a6 6 0 0 0 4 0" />
+      </svg>
+    ),
+  },
+];
+
 export function Footer() {
   return (
     <footer className="mt-24 border-t border-border surface-deep">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="lg:col-span-2">
-          <div className="flex items-center gap-3">
-            <BrandLogo size={32} />
-            <p className="text-display text-3xl">Монгол Мах</p>
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="grid gap-10 py-12 justify-between sm:grid-cols-3 lg:grid-cols-3">
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-3">
+              <BrandLogo size={32} />
+              <p className="text-display text-xl">Монгол Мах</p>
+            </div>
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
+              Малчнаас шууд. Шинэ, чанартай мах Улаанбаатар хотод хүргэнэ.
+              Килограммаар нарийн хэрчиж, хүйтэн хэлхээгээр тээвэрлэнэ.
+            </p>
+            <div className="mt-5 flex gap-2">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="grid size-8 place-items-center rounded-full border border-white/10 bg-white/[0.06] text-white/70 hover:border-primary/40 hover:bg-primary hover:text-white transition-colors"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+            <p className="mt-5 eyebrow text-primary">
+              since 2026 · Ulaanbaatar
+            </p>
           </div>
-          <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-            Малчнаас шууд. Шинэ, чанартай мах Улаанбаатар хотод хүргэнэ. Килограммаар
-            нарийн хэрчиж, хүйтэн хэлхээгээр тээвэрлэнэ.
-          </p>
-          <p className="mt-6 eyebrow text-primary">since 2026 · Ulaanbaatar</p>
+
+          {/* Legal */}
+          <div className="px-30">
+            <p className="eyebrow text-foreground">Үйлчилгээний нөхцөл</p>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              <li>
+                <Link
+                  href="/terms"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  Үйлчилгээний нөхцөл
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/policy"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  Нууцлалын бодлого
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/delivery"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  Хүргэлтийн нөхцөл
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/admin"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  Админ нэвтрэх
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Help */}
+          <div className="px-30">
+            <p className="eyebrow text-foreground">Тусламж</p>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              <li>
+                <Link
+                  href="/track"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  Захиалга хайх
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cart"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  Сагс
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/about"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  Бидний тухай
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="tel:99112233"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  9911-2233
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:info@mongolmah.mn"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  info@mongolmah.mn
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="space-y-3 text-sm">
-          <p className="eyebrow text-muted-foreground">Холбоо барих</p>
-          <p className="flex items-center gap-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
-              <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
-            </svg>
-            9911-2233
-          </p>
-          <p className="flex items-start gap-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary mt-0.5">
-              <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" /><circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" />
-            </svg>
-            <span className="text-muted-foreground">Улаанбаатар хотод захиалгаа 24 цагийн дотор хүргэнэ.</span>
+
+        <div className="flex flex-col items-center justify-center gap-3 border-t border-border py-6 text-xs text-muted-foreground sm:flex-row">
+          <p>
+            © {new Date().getFullYear()} Монгол Мах · Бүх эрх хуулиар
+            хамгаалагдсан
           </p>
         </div>
-        <div className="space-y-3 text-sm">
-          <p className="eyebrow text-muted-foreground">Хуудсууд</p>
-          <Link href="/products" className="block text-muted-foreground hover:text-primary transition-colors">
-            Бүтээгдэхүүн
-          </Link>
-          <Link href="/track" className="block text-muted-foreground hover:text-primary transition-colors">
-            Захиалга хайх
-          </Link>
-          <Link href="/cart" className="block text-muted-foreground hover:text-primary transition-colors">
-            Сагс
-          </Link>
-          <Link href="/about" className="block text-muted-foreground hover:text-primary transition-colors">
-            Бидний тухай
-          </Link>
-          <Link href="/recipes" className="block text-muted-foreground hover:text-primary transition-colors">
-            Жор
-          </Link>
-          <Link href="/admin" className="block text-muted-foreground hover:text-primary transition-colors">
-            Админ нэвтрэх
-          </Link>
-        </div>
-      </div>
-      <div className="border-t border-border py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Монгол Мах · Бүх эрх хуулиар хамгаалагдсан
       </div>
     </footer>
   );

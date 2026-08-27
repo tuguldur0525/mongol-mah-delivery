@@ -4,6 +4,7 @@ import { formatMnt } from "@/lib/validations";
 import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/components/order/status";
 import type { Order, OrderStatus, OrderPaymentStatus } from "@/types";
 import { formatUBDateTime } from "@/lib/time";
+import { StatusFilter } from "@/components/admin/status-filter";
 
 export const dynamic = "force-dynamic";
 
@@ -37,15 +38,6 @@ export default async function AdminOrdersPage({
     { key: "paid", label: "Төлөгдсөн" },
     { key: "failed", label: "Амжилтгүй" },
   ];
-  const statusFilters = [
-    { key: "", label: "Бүх төлөв" },
-    { key: "pending_payment", label: "Төлбөр хүлээж" },
-    { key: "confirmed", label: "Баталгаажсан" },
-    { key: "preparing", label: "Бэлтгэж байна" },
-    { key: "delivering", label: "Хүргэлтэнд" },
-    { key: "delivered", label: "Хүргэгдсэн" },
-    { key: "cancelled", label: "Цуцлагдсан" },
-  ];
 
   const buildHref = (patch: Record<string, string | undefined>) => {
     const params = new URLSearchParams();
@@ -76,7 +68,7 @@ export default async function AdminOrdersPage({
         </button>
       </form>
 
-      <div className="mt-4 flex flex-wrap gap-1.5">
+      <div className="mt-4 flex flex-wrap items-center gap-1.5">
         {paymentFilters.map((f) => (
           <Link
             key={f.key || "all"}
@@ -87,15 +79,7 @@ export default async function AdminOrdersPage({
           </Link>
         ))}
         <span className="mx-1 h-4 w-px self-center bg-border" />
-        {statusFilters.map((f) => (
-          <Link
-            key={f.key || "all"}
-            href={buildHref({ status: f.key || undefined })}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium border transition-colors ${ (sp.status ?? "") === f.key ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}
-          >
-            {f.label}
-          </Link>
-        ))}
+        <StatusFilter value={sp.status} />
       </div>
 
       <div className="mt-6 overflow-x-auto rounded-xl border border-border bg-card shadow-card">

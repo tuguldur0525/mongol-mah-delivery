@@ -72,7 +72,8 @@ export default function CheckoutPage() {
         <span className="text-xs text-mute">Алхам 2/2</span>
       </div>
       <p className="mt-1 text-sm text-mute">
-        Нэвтрэх шаардлагагүй. Wire төлбөрийн системээр төлнө.
+        Нэвтрэх шаардлагагүй. Хүссэн банкны аппликейшин болон Qpay ашиглан төлөх
+        боломжтой.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -111,7 +112,7 @@ export default function CheckoutPage() {
                 name="address"
                 required
                 rows={2}
-                placeholder="БЗД, 15-р хороо, ... байр, орц ..."
+                placeholder="СБД, 15-р хороо, ... байр, орц ..."
                 autoComplete="street-address"
               />
             </div>
@@ -131,11 +132,19 @@ export default function CheckoutPage() {
           <h2 className="eyebrow">Захиалга</h2>
           <ul className="mt-3 divide-y divide-border">
             {items.map((i) => (
-              <li key={i.productId} className="flex justify-between py-2.5 text-sm">
+              <li
+                key={i.productId}
+                className="flex justify-between py-2.5 text-sm"
+              >
                 <span>
-                  {i.name} <span className="text-muted-foreground">× {formatKg(i.quantityKg)}</span>
+                  {i.name}{" "}
+                  <span className="text-muted-foreground">
+                    × {formatKg(i.quantityKg)}
+                  </span>
                 </span>
-                <span className="font-medium">{formatMnt(Math.round(i.pricePerKg * i.quantityKg))}</span>
+                <span className="font-medium">
+                  {formatMnt(Math.round(i.pricePerKg * i.quantityKg))}
+                </span>
               </li>
             ))}
           </ul>
@@ -154,14 +163,19 @@ export default function CheckoutPage() {
             </div>
             <div className="flex justify-between border-t border-border pt-2 text-base font-bold">
               <span>Нийт</span>
-              <span className="text-display text-lg">{formatMnt(totalWithDelivery)}</span>
+              <span className="text-display text-lg">
+                {formatMnt(totalWithDelivery)}
+              </span>
             </div>
           </div>
           {isFree ? (
-            <p className="mt-2 text-xs text-green-600">✓ {formatMnt(FREE_DELIVERY_THRESHOLD)} дээш — хүргэлт үнэгүй</p>
+            <p className="mt-2 text-xs text-green-600">
+              ✓ {formatMnt(FREE_DELIVERY_THRESHOLD)} дээш — хүргэлт үнэгүй
+            </p>
           ) : (
             <p className="mt-2 text-xs text-muted-foreground">
-              {formatMnt(FREE_DELIVERY_THRESHOLD - cartTotal)} нэмбэл хүргэлт үнэгүй
+              {formatMnt(FREE_DELIVERY_THRESHOLD - cartTotal)} нэмбэл хүргэлт
+              үнэгүй
             </p>
           )}
         </section>
@@ -177,9 +191,7 @@ export default function CheckoutPage() {
           disabled={pending || redirecting}
           className="btn-primary w-full"
         >
-          {pending || redirecting
-            ? "Төлбөр үүсгэж байна..."
-            : "Wire төлбөрөөр төлөх"}
+          {pending || redirecting ? "Төлбөр үүсгэж байна..." : "Төлбөр төлөх"}
         </button>
         <p className="text-center text-[0.6875rem] text-mute">
           Таны карт болон банкины мэдээллийг бид хадгалдаггүй.

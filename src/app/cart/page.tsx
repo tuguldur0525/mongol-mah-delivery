@@ -56,7 +56,10 @@ export default function CartPage() {
   }
 
   const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - total);
-  const progress = Math.min(100, Math.round((total / FREE_DELIVERY_THRESHOLD) * 100));
+  const progress = Math.min(
+    100,
+    Math.round((total / FREE_DELIVERY_THRESHOLD) * 100),
+  );
   const isFree = total >= FREE_DELIVERY_THRESHOLD;
   const deliveryFee = getDeliveryFee(total, configuredFee);
   const totalWithDelivery = total + deliveryFee;
@@ -65,21 +68,38 @@ export default function CartPage() {
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-display text-2xl">Сагс</h1>
-        <span className="text-xs text-muted-foreground">{items.length} бүтээгдэхүүн</span>
+        <span className="text-xs text-muted-foreground">
+          {items.length} бүтээгдэхүүн
+        </span>
       </div>
 
       {/* Free delivery progress - inspired by primeat banner, our palette */}
       <div className="mt-6 rounded-xl border border-border bg-card p-4">
         <div className="flex items-center justify-between text-sm">
-          <span className={isFree ? "font-semibold text-green-600" : "text-muted-foreground"}>
-            {isFree ? "✓ Хүргэлт үнэгүй боллоо!" : `Хүргэлт үнэгүй болоход ${formatMnt(remaining)} дутуу`}
+          <span
+            className={
+              isFree ? "font-semibold text-green-600" : "text-muted-foreground"
+            }
+          >
+            {isFree
+              ? "✓ Хүргэлт үнэгүй боллоо!"
+              : `Хүргэлт үнэгүй болоход ${formatMnt(remaining)} дутуу`}
           </span>
-          <span className="text-xs text-muted-foreground">{formatMnt(total)} / {formatMnt(FREE_DELIVERY_THRESHOLD)}</span>
+          <span className="text-xs text-muted-foreground">
+            {formatMnt(total)} / {formatMnt(FREE_DELIVERY_THRESHOLD)}
+          </span>
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
-          <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+          <div
+            className="h-full bg-primary transition-all"
+            style={{ width: `${progress}%` }}
+          />
         </div>
-        {!isFree && <p className="mt-2 text-xs text-muted-foreground">{formatMnt(FREE_DELIVERY_THRESHOLD)} дээш бол хүргэлт үнэгүй.</p>}
+        {!isFree && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {formatMnt(FREE_DELIVERY_THRESHOLD)} дээш бол хүргэлт үнэгүй.
+          </p>
+        )}
       </div>
 
       <div className="mt-6 divide-y divide-line">
@@ -97,7 +117,11 @@ export default function CartPage() {
                 href={`/products/${item.slug}`}
                 className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-coal"
               >
-                <ProductImage src={item.imageUrl} alt={item.name} className="h-full w-full" />
+                <ProductImage
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="h-full w-full"
+                />
               </Link>
 
               <div className="min-w-0 flex-1">
@@ -124,7 +148,9 @@ export default function CartPage() {
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex items-center">
                     <button
-                      onClick={() => setQuantity(item.productId, item.quantityKg - 0.5)}
+                      onClick={() =>
+                        setQuantity(item.productId, item.quantityKg - 0.5)
+                      }
                       className="flex h-8 w-8 items-center justify-center border border-line text-sm text-bone hover:border-bone"
                     >
                       −
@@ -133,7 +159,9 @@ export default function CartPage() {
                       {formatKg(item.quantityKg)}
                     </span>
                     <button
-                      onClick={() => setQuantity(item.productId, item.quantityKg + 0.5)}
+                      onClick={() =>
+                        setQuantity(item.productId, item.quantityKg + 0.5)
+                      }
                       disabled={item.quantityKg >= item.stockKg}
                       className="flex h-8 w-8 items-center justify-center border border-line text-sm text-bone hover:border-bone disabled:opacity-30"
                     >
@@ -165,9 +193,15 @@ export default function CartPage() {
         </div>
         <div className="mt-3 flex justify-between border-t border-border pt-3">
           <span className="text-sm font-semibold">Нийт</span>
-          <span className="text-display text-lg font-bold">{formatMnt(totalWithDelivery)}</span>
+          <span className="text-display text-lg font-bold">
+            {formatMnt(totalWithDelivery)}
+          </span>
         </div>
-        {isFree && <p className="mt-1 text-right text-xs text-green-600">100&apos;000₮ дээш захиалга — хүргэлт үнэгүй</p>}
+        {isFree && (
+          <p className="mt-1 text-right text-xs text-green-600">
+            100&apos;000₮ дээш захиалга — хүргэлт үнэгүй
+          </p>
+        )}
         <Link href="/checkout" className="btn-primary mt-4 block w-full">
           Захиалга үргэлжлүүлэх
         </Link>
@@ -175,7 +209,7 @@ export default function CartPage() {
           href="/products"
           className="mt-3 block text-center text-xs text-mute hover:text-cream"
         >
-          Үргэлжлүүлэн худалдан авах
+          Худалдан авалтаа үргэлжлүүлэх
         </Link>
       </div>
     </div>

@@ -12,6 +12,8 @@ type SearchParams = Promise<{
   stock?: string;
   category?: string;
   q?: string;
+  min?: string;
+  max?: string;
 }>;
 
 export default async function ProductsPage({
@@ -28,6 +30,8 @@ export default async function ProductsPage({
         ? "price_desc"
         : "newest";
 
+  const hasActiveFilter = !!(cat || sp.q || sp.stock || sp.min || sp.max);
+
   const [categories, products] = await Promise.all([
     getCategories(),
     getProducts({
@@ -35,13 +39,14 @@ export default async function ProductsPage({
       sort,
       inStockOnly: sp.stock === "1",
       search: sp.q,
+      minPrice: sp.min ? Number(sp.min) : undefined,
+      maxPrice: sp.max ? Number(sp.max) : undefined,
     }),
   ]);
 
   const buildHref = (patch: Record<string, string | undefined>) => {
     const params = new URLSearchParams();
     const merged: Record<string, string | undefined> = { ...sp, ...patch };
-    // normalize: drop cat if undefined and ensure category param not duplicated
     if (patch.cat === undefined) {
       delete merged.cat;
       delete merged.category;
@@ -55,72 +60,149 @@ export default async function ProductsPage({
   };
 
   const sorts = [
-    { key: "newest", label: "Шинэ" },
-    { key: "price_asc", label: "Бага → Их" },
-    { key: "price_desc", label: "Их → Бага" },
+    { key: "newest", label: "Шинэ эхэндээ" },
+    { key: "price_asc", label: "Хямд нь эхэндээ" },
+    { key: "price_desc", label: "Үнэтэй нь эхэндээ" },
   ];
 
   const activeCategory = categories.find((c) => c.slug === cat);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-      <p className="eyebrow text-primary">Дэлгүүр</p>
-      <div className="mt-2 flex items-end justify-between gap-4">
-        <h1 className="text-4xl text-display">
-          {sp.q ? `Хайлт: "${sp.q}"` : activeCategory ? `${activeCategory.name} мах` : "Бүх бүтээгдэхүүн"}
-        </h1>
-        <span className="text-sm text-muted-foreground">{products.length} ширхэг</span>
+      {/* Header + inline search */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="eyebrow text-primary">Дэлгүүр</p>
+          <h1 className="mt-2 text-4xl text-display">
+            {sp.q
+              ? `Хайлт: "${sp.q}"`
+              : activeCategory
+                ? `${activeCategory.name} мах`
+                : "Бүх бүтээгдэхүүн"}
+          </h1>
+        </div>
+        <form
+          action="/products"
+          className="flex w-full max-w-sm gap-2 lg:shrink-0"
+        >
+          {/* preserve current filters as hidden */}
+          {cat && <input type="hidden" name="category" value={cat} />}
+          {sp.sort && <input type="hidden" name="sort" value={sp.sort} />}
+          {sp.stock && <input type="hidden" name="stock" value={sp.stock} />}
+          <div className="relative flex-1">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.34-4.34" />
+              </svg>
+            </span>
+            <input
+              name="q"
+              defaultValue={sp.q ?? ""}
+              placeholder="      Мах хайх... цул, хавирга"
+              className="h-10 w-full rounded-full border border-border bg-card pl-10 pr-4 text-sm"
+            />
+          </div>
+          <button
+            type="submit"
+            className="h-10 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            Хайх
+          </button>
+        </form>
       </div>
-      {sp.q && (
-        <div className="mt-3 flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">"{sp.q}" үр дүн</span>
-          <Link href={buildHref({ q: undefined })} className="rounded-full border border-border px-3 py-1 text-xs hover:bg-accent">
-            Цэвэрлэх ×
+
+      {/* Filter bar — categories on left, sort on right */}
+      <div className="mt-6 flex flex-col gap-3 rounded-xl border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+        <div className="flex gap-2 overflow-x-auto scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap">
+          <Link
+            href={buildHref({ cat: undefined, category: undefined })}
+            className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium border transition-colors ${!cat ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/40"}`}
+          >
+            Бүгд
           </Link>
+          {categories.map((c) => (
+            <Link
+              key={c.id}
+              href={buildHref({ cat: c.slug })}
+              className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium border transition-colors ${cat === c.slug ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/40"}`}
+            >
+              {c.name} мах
+            </Link>
+          ))}
+        </div>
+
+        <div className="flex shrink-0 items-center gap-1 border-t border-border pt-3 sm:border-0 sm:pt-0">
+          <span className="mr-1 hidden text-xs text-muted-foreground sm:inline">
+            Эрэмбэ:
+          </span>
+          {sorts.map((s) => (
+            <Link
+              key={s.key}
+              href={buildHref({ sort: s.key })}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium border transition-colors ${sp.sort === s.key || (s.key === "newest" && !sp.sort) ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}
+            >
+              {s.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Active filter chips */}
+      {hasActiveFilter && (
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          {sp.q && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              “{sp.q}”
+              <Link
+                href={buildHref({ q: undefined })}
+                className="ml-1 hover:text-destructive"
+              >
+                ×
+              </Link>
+            </span>
+          )}
+          {sp.stock === "1" && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              Байгаа
+              <Link
+                href={buildHref({ stock: undefined })}
+                className="ml-1 hover:text-destructive"
+              >
+                ×
+              </Link>
+            </span>
+          )}
+          {(sp.min || sp.max) && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              {sp.min ?? "0"} — {sp.max ?? "∞"}₮
+              <Link
+                href={buildHref({ min: undefined, max: undefined })}
+                className="ml-1 hover:text-destructive"
+              >
+                ×
+              </Link>
+            </span>
+          )}
         </div>
       )}
 
-      {/* Filters - pill style like mongol-mah */}
-      <div className="mt-8 flex flex-wrap items-center gap-2">
-        <Link
-          href={buildHref({ cat: undefined, category: undefined })}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition-colors border ${!cat ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/40"}`}
-        >
-          Бүгд
-        </Link>
-        {categories.map((c) => (
-          <Link
-            key={c.id}
-            href={buildHref({ cat: c.slug })}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors border ${cat === c.slug ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/40"}`}
-          >
-            {c.name} мах
-          </Link>
-        ))}
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-        <Link
-          href={buildHref({ stock: sp.stock === "1" ? undefined : "1" })}
-          className={`rounded-md px-3 py-1.5 text-xs font-medium border transition-colors ${sp.stock === "1" ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}
-        >
-          Байгаа
-        </Link>
-        <span className="mx-1 h-4 w-px bg-border" />
-        {sorts.map((s) => (
-          <Link
-            key={s.key}
-            href={buildHref({ sort: s.key })}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium border transition-colors ${sp.sort === s.key || (s.key === "newest" && !sp.sort) ? "bg-card border-border text-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}
-          >
-            {s.label}
-          </Link>
-        ))}
-      </div>
-
       {products.length === 0 ? (
         <div className="mt-10 rounded-xl border border-border bg-card p-12 text-center">
-          <p className="text-sm text-muted-foreground">Ийм шүүлтүүрт тохирох бүтээгдэхүүн олдсонгүй.</p>
+          <p className="text-sm font-medium">Илэрц олдсонгүй</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Шүүлтээ суллаж эсвэл өөр түлхүүр үгээр хайна уу.
+          </p>
+          <Link href="/products" className="btn-secondary mt-4">
+            Шүүлт цэвэрлэх
+          </Link>
         </div>
       ) : (
         <div className="mt-8 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">

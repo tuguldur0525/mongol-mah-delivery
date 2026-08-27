@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getCategories, getProducts } from "@/lib/queries";
 import { ProductCard } from "@/components/products/product-card";
@@ -14,9 +15,12 @@ export default async function HomePage() {
   return (
     <div>
       <section className="relative overflow-hidden border-b border-border height-[80vh] lg:h-[85vh]">
-        <img
+        <Image
           src="/hero-steppe.jpg"
           alt="Тал дээр бэлчиж буй адуу, үхэр — урд нь модон тавцан дээрх шинэ мах"
+          fill
+          priority
+          sizes="100vw"
           className="absolute inset-0 h-full w-full object-cover object-[62%_78%] sm:object-[68%_35%] lg:object-center"
         />
         {/* Mobile: top dark for text readability, bottom stronger for meat separation */}
@@ -25,7 +29,7 @@ export default async function HomePage() {
           aria-hidden="true"
         />
 
-        <div className="relative mx-auto flex min-h-[560px] max-w-7xl items-end px-5 pb-8 pt-10 sm:min-h-[520px] sm:items-end sm:px-6 sm:pb-12 lg:min-h-[560px] lg:grid lg:grid-cols-2 lg:items-end lg:gap-8 lg:px-8 lg:pb-16 lg:pt-24">
+        <div className="relative mx-auto flex min-h-[560px] max-w-7xl items-end px-5 pb-8 pt-10 sm:min-h-[520px] sm:items-end sm:px-6 sm:pb-12 lg:min-h-[560px] lg:grid lg:grid-cols-2 lg:items-end lg:gap-8 lg:px-8 lg:pt-38">
           <div className="w-full max-w-xl py-6 sm:py-4">
             <h1 className="font-display text-[1.95rem] font-semibold leading-[0.9] tracking-[-0.03em] text-white sm:mt-4 sm:text-6xl lg:text-[5rem]">
               <span className="block font-medium">Малчны хотноос,</span>
@@ -33,12 +37,12 @@ export default async function HomePage() {
                 <span className="font-bold italic tracking-[-0.04em] text-primary">
                   Таны
                 </span>
-                <span className="font-medium text-white"> ширээнд</span>
+                <span className="font-medium text-white"> гэрт.</span>
               </span>
             </h1>
             <p className="mt-3 max-w-[320px] text-[13px] leading-relaxed text-white/90 sm:mt-4 sm:max-w-md sm:text-base">
-              Монголын өргөн талын малчдын гараас шууд — шинэхэн, гарал тодорхой
-              махыг 24 цагийн дотор.
+              Монгол малчин айлын гэрээс гарал үүсэл тодорхой эрүүл махыг 24
+              цагийн дотор хүргэнэ.
             </p>
             <div className="mt-6 flex flex-wrap gap-3 ">
               <Link href="/products" className="btn-primary justify-center ">
@@ -95,7 +99,7 @@ export default async function HomePage() {
             <div>
               <p className="text-sm font-bold">Шинэхэн, хөргөсөн</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Тухайн өдрийн бэлтгэл, хүйтэн хэлхээгээр.
+                Тухайн өдрийн шинээр бэлтгэн, хөргөгчид хадгалсан мах.
               </p>
             </div>
           </div>
@@ -138,9 +142,9 @@ export default async function HomePage() {
               </svg>
             </span>
             <div>
-              <p className="text-sm font-bold">Банкны шилжүүлэг</p>
+              <p className="text-sm font-bold">Аюулгүй төлбөр төлөлт</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Дансаар төлж, гүйлгээний дугаараа бүртгэнэ.
+                Банкний аппликейшнээр болон QPAY ашиглан төлөх
               </p>
             </div>
           </div>
@@ -161,7 +165,7 @@ export default async function HomePage() {
             <div>
               <p className="text-sm font-bold">Чанарын хяналт</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Мал бүрийн гарал үүсэл тодорхой.
+                Мах бүхэн гарал үүсэл тодорхой.
               </p>
             </div>
           </div>
@@ -287,9 +291,6 @@ export default async function HomePage() {
                   </div>
                 ))}
               </div>
-              <p className="mt-2 text-center text-xs text-muted-foreground sm:hidden">
-                ← шудраад үзэх →
-              </p>
             </>
           )}
         </div>
@@ -343,9 +344,7 @@ export default async function HomePage() {
             <div>
               <p className="eyebrow text-primary">Жор</p>
               <h2 className="mt-2 text-4xl text-display">Юу хийж болох вэ?</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Махаар хийх 6 санаа — primeat-аас санаа авав, жор өөрсдийн.
-              </p>
+              <p className="mt-2 text-sm text-muted-foreground"></p>
             </div>
             <Link
               href="/recipes"
@@ -391,41 +390,6 @@ export default async function HomePage() {
                 </div>
               </Link>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA - generous bottom whitespace */}
-      <section className="mx-auto max-w-7xl px-4 pb-16 pt-4 lg:pb-24">
-        <div className="relative overflow-hidden rounded-2xl surface-blood px-6 py-16 text-center sm:px-14 lg:py-20">
-          <div
-            className="absolute inset-0 grain-lines opacity-40"
-            aria-hidden="true"
-          />
-          <div className="relative">
-            <h2 className="text-4xl text-display">
-              Өнөөдрийн бэлтгэл дууссаагүй байна
-            </h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm opacity-90">
-              Захиалгаа өнөөдөр өгвөл маргааш гэртээ шинэ мах хүлээн авна.
-            </p>
-            <Link
-              href="/products"
-              className="mt-8 inline-flex h-10 items-center gap-2 rounded-md bg-white px-8 text-sm font-medium text-primary hover:bg-white/90 transition-colors"
-            >
-              Одоо захиалах
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-              </svg>
-            </Link>
           </div>
         </div>
       </section>
