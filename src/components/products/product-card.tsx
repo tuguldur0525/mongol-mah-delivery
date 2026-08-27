@@ -40,6 +40,7 @@ export function ProductCard({
 }) {
   const addItem = useCart((s) => s.addItem);
   const [added, setAdded] = useState(false);
+  const [qty, setQty] = useState(1);
 
   const outOfStock = !product.is_available || product.stock_kg <= 0;
   const lowStock = !outOfStock && product.stock_kg <= product.low_stock_threshold;
@@ -55,7 +56,7 @@ export function ProductCard({
         imageUrl: product.image_url,
         stockKg: product.stock_kg,
       },
-      1,
+      qty,
     );
     setAdded(true);
     setTimeout(() => setAdded(false), 1200);
@@ -94,10 +95,29 @@ export function ProductCard({
           {outOfStock ? "Дууссан" : lowStock ? `Багахан үлдсэн · ${product.stock_kg} кг` : `Байгаа · ${product.stock_kg} кг`}
         </p>
 
+        {!outOfStock && (
+          <div className="mt-3 flex items-center justify-between rounded-md border border-border bg-background p-1">
+            <button
+              onClick={() => setQty((q) => Math.max(0.5, q - 0.5))}
+              className="grid size-7 place-items-center rounded text-sm hover:bg-accent"
+              aria-label="Хасах"
+            >
+              −
+            </button>
+            <span className="text-xs font-semibold">{qty} кг · {formatMnt(Math.round(product.price_per_kg * qty))}</span>
+            <button
+              onClick={() => setQty((q) => Math.min(product.stock_kg, q + 0.5))}
+              className="grid size-7 place-items-center rounded text-sm hover:bg-accent"
+              aria-label="Нэмэх"
+            >
+              +
+            </button>
+          </div>
+        )}
         <button
           onClick={handleAdd}
           disabled={outOfStock}
-          className={`mt-4 w-full rounded-md py-2 text-sm font-semibold transition-colors ${outOfStock ? "bg-muted text-muted-foreground cursor-not-allowed" : added ? "bg-green-600 text-white" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
+          className={`mt-3 w-full rounded-md py-2 text-sm font-semibold transition-colors ${outOfStock ? "bg-muted text-muted-foreground cursor-not-allowed" : added ? "bg-green-600 text-white" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
         >
           {outOfStock ? "Дууссан" : added ? "Нэмэгдлээ ✓" : "Сагсанд нэмэх"}
         </button>

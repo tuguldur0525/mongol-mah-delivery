@@ -2,13 +2,29 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useCart } from "@/lib/store/cart";
 import { ProductImage } from "@/components/products/product-card";
 import { formatMnt, formatKg } from "@/lib/validations";
+import { createClient } from "@/lib/supabase/client";
+import { FREE_DELIVERY_THRESHOLD, getDeliveryFee } from "@/lib/delivery";
 
 export default function CartPage() {
   const { items, removeItem, setQuantity, subtotal } = useCart();
   const total = subtotal();
+  const [configuredFee, setConfiguredFee] = useState(5000);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("store_settings")
+      .select("delivery_fee")
+      .eq("id", 1)
+      .single()
+      .then(({ data }) => {
+        if (data?.delivery_fee != null) setConfiguredFee(data.delivery_fee);
+      });
+  }, []);
 
   if (items.length === 0) {
     return (
@@ -39,11 +55,31 @@ export default function CartPage() {
     );
   }
 
+  const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - total);
+  const progress = Math.min(100, Math.round((total / FREE_DELIVERY_THRESHOLD) * 100));
+  const isFree = total >= FREE_DELIVERY_THRESHOLD;
+  const deliveryFee = getDeliveryFee(total, configuredFee);
+  const totalWithDelivery = total + deliveryFee;
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold">Сагс</h1>
-        <span className="text-xs text-mute">{items.length} бүтээгдэхүүн</span>
+        <h1 className="text-display text-2xl">Сагс</h1>
+        <span className="text-xs text-muted-foreground">{items.length} бүтээгдэхүүн</span>
+      </div>
+
+      {/* Free delivery progress - inspired by primeat banner, our palette */}
+      <div className="mt-6 rounded-xl border border-border bg-card p-4">
+        <div className="flex items-center justify-between text-sm">
+          <span className={isFree ? "font-semibold text-green-600" : "text-muted-foreground"}>
+            {isFree ? "✓ Хүргэлт үнэгүй боллоо!" : `Хүргэлт үнэгүй болоход ${formatMnt(remaining)} дутуу`}
+          </span>
+          <span className="text-xs text-muted-foreground">{formatMnt(total)} / {formatMnt(FREE_DELIVERY_THRESHOLD)}</span>
+        </div>
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+          <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+        </div>
+        {!isFree && <p className="mt-2 text-xs text-muted-foreground">{formatMnt(FREE_DELIVERY_THRESHOLD)} дээш бол хүргэлт үнэгүй.</p>}
       </div>
 
       <div className="mt-6 divide-y divide-line">
@@ -114,19 +150,24 @@ export default function CartPage() {
         </AnimatePresence>
       </div>
 
-      <div className="mt-4 border-t border-line pt-5">
-        <div className="flex justify-between text-sm text-bone">
-          <span>Бүтээгдэхүүний дүн</span>
-          <span>{formatMnt(total)}</span>
+      <div className="mt-4 border-t border-border pt-5">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Бүтээгдэхүүний дүн</span>
+          <span className="font-medium">{formatMnt(total)}</span>
         </div>
-        <div className="mt-1 flex justify-between text-xs text-mute">
-          <span>Хүргэлтийн төлбөр</span>
-          <span>Төлбөр тооцоолох үед</span>
+        <div className="mt-1 flex justify-between text-sm">
+          <span className="text-muted-foreground">Хүргэлтийн төлбөр</span>
+          {isFree ? (
+            <span className="font-semibold text-green-600">Үнэгүй</span>
+          ) : (
+            <span className="font-medium">{formatMnt(deliveryFee)}</span>
+          )}
         </div>
-        <div className="mt-3 flex justify-between border-t border-line pt-3">
+        <div className="mt-3 flex justify-between border-t border-border pt-3">
           <span className="text-sm font-semibold">Нийт</span>
-          <span className="font-display text-lg font-bold">{formatMnt(total)}+</span>
+          <span className="text-display text-lg font-bold">{formatMnt(totalWithDelivery)}</span>
         </div>
+        {isFree && <p className="mt-1 text-right text-xs text-green-600">100&apos;000₮ дээш захиалга — хүргэлт үнэгүй</p>}
         <Link href="/checkout" className="btn-primary mt-4 block w-full">
           Захиалга үргэлжлүүлэх
         </Link>

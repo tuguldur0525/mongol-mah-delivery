@@ -112,13 +112,14 @@ export async function createOrderAndPayment(
     });
   }
 
-  // 4. Delivery fee from store settings
+  // 4. Delivery fee from store settings — free if >= 100,000₮
   const { data: settings } = await supabase
     .from("store_settings")
     .select("delivery_fee")
     .eq("id", 1)
     .single();
-  const deliveryFee = settings?.delivery_fee ?? 0;
+  const configuredFee = settings?.delivery_fee ?? 0;
+  const deliveryFee = subtotal >= 100_000 ? 0 : configuredFee;
   const total = subtotal + deliveryFee;
 
   // 5. Create pending order + items

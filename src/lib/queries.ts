@@ -18,6 +18,7 @@ export async function getProducts(options: {
   minPrice?: number;
   maxPrice?: number;
   limit?: number;
+  search?: string;
 }): Promise<ProductWithCategory[]> {
   const supabase = await createClient();
   let query = supabase
@@ -26,6 +27,9 @@ export async function getProducts(options: {
 
   if (options.categorySlug) {
     query = query.eq("categories.slug", options.categorySlug);
+  }
+  if (options.search) {
+    query = query.ilike("name", `%${options.search}%`);
   }
   if (options.inStockOnly) {
     query = query.gt("stock_kg", 0).eq("is_available", true);

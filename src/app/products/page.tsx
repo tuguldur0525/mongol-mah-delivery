@@ -11,6 +11,7 @@ type SearchParams = Promise<{
   sort?: string;
   stock?: string;
   category?: string;
+  q?: string;
 }>;
 
 export default async function ProductsPage({
@@ -33,6 +34,7 @@ export default async function ProductsPage({
       categorySlug: cat,
       sort,
       inStockOnly: sp.stock === "1",
+      search: sp.q,
     }),
   ]);
 
@@ -65,10 +67,18 @@ export default async function ProductsPage({
       <p className="eyebrow text-primary">Дэлгүүр</p>
       <div className="mt-2 flex items-end justify-between gap-4">
         <h1 className="text-4xl text-display">
-          {activeCategory ? `${activeCategory.name} мах` : "Бүх бүтээгдэхүүн"}
+          {sp.q ? `Хайлт: "${sp.q}"` : activeCategory ? `${activeCategory.name} мах` : "Бүх бүтээгдэхүүн"}
         </h1>
         <span className="text-sm text-muted-foreground">{products.length} ширхэг</span>
       </div>
+      {sp.q && (
+        <div className="mt-3 flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">"{sp.q}" үр дүн</span>
+          <Link href={buildHref({ q: undefined })} className="rounded-full border border-border px-3 py-1 text-xs hover:bg-accent">
+            Цэвэрлэх ×
+          </Link>
+        </div>
+      )}
 
       {/* Filters - pill style like mongol-mah */}
       <div className="mt-8 flex flex-wrap items-center gap-2">

@@ -41,6 +41,9 @@ export function Footer() {
           <Link href="/about" className="block text-muted-foreground hover:text-primary transition-colors">
             Бидний тухай
           </Link>
+          <Link href="/recipes" className="block text-muted-foreground hover:text-primary transition-colors">
+            Жор
+          </Link>
           <Link href="/admin" className="block text-muted-foreground hover:text-primary transition-colors">
             Админ нэвтрэх
           </Link>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCategories, getProducts } from "@/lib/queries";
 import { ProductCard } from "@/components/products/product-card";
+import { recipes } from "@/lib/recipes";
 
 export const dynamic = "force-dynamic";
 
@@ -234,6 +235,40 @@ export default async function HomePage() {
             </li>
           ))}
         </ol>
+      </section>
+
+      {/* Recipes teaser - inspired by primeat Жор, own content */}
+      <section className="border-y border-border bg-card/40">
+        <div className="mx-auto max-w-7xl px-4 py-16 lg:py-20">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="eyebrow text-primary">Жор</p>
+              <h2 className="mt-2 text-4xl text-display">Юу хийж болох вэ?</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Махаар хийх 6 санаа — primeat-аас санаа авав, жор өөрсдийн.</p>
+            </div>
+            <Link href="/recipes" className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent">
+              Бүх жор
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {recipes.slice(0, 3).map((r) => (
+              <Link key={r.slug} href={`/recipes/${r.slug}`} className="group overflow-hidden rounded-xl border border-border bg-card hover:border-primary/40 transition-all">
+                <div className="aspect-[4/3] overflow-hidden bg-muted">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={r.image} alt={r.title} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+                <div className="p-4">
+                  <span className="tag tag-muted">{r.tagLabel}</span>
+                  <h3 className="mt-2 font-semibold leading-snug group-hover:text-primary">{r.title}</h3>
+                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{r.excerpt}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* CTA - generous bottom whitespace */}

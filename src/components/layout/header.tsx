@@ -4,10 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/store/cart";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SearchModal } from "@/components/search-modal";
+import { useState } from "react";
 
 export function Header() {
   const pathname = usePathname();
   const count = useCart((s) => s.items.length);
+  const [searchOpen, setSearchOpen] = useState(false);
   if (pathname.startsWith("/admin")) return null;
 
   const isActive = (href: string) => {
@@ -88,20 +91,27 @@ export function Header() {
             >
               Бидний тухай
             </Link>
+            <Link
+              href="/recipes"
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${isActive("/recipes") ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              Жор
+            </Link>
           </nav>
 
           <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
-            <Link
+            <button
               aria-label="Бүтээгдэхүүн хайх"
-              href="/products"
+              onClick={() => setSearchOpen(true)}
               className="inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.34-4.34" />
               </svg>
-            </Link>
+            </button>
+            <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
             <Link
               href="/cart"
               className="inline-flex h-8 items-center gap-2 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"

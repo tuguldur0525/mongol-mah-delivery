@@ -1,19 +1,37 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCart } from "@/lib/store/cart";
 import { createOrderAndPayment } from "@/actions/orders";
 import { formatMnt, formatKg } from "@/lib/validations";
+import { createClient } from "@/lib/supabase/client";
+import { FREE_DELIVERY_THRESHOLD, getDeliveryFee } from "@/lib/delivery";
 
 export default function CheckoutPage() {
-  const { items, subtotal, clear } = useCart();
+  const { items, subtotal } = useCart();
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [redirecting, setRedirecting] = useState(false);
+  const [configuredFee, setConfiguredFee] = useState(5000);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("store_settings")
+      .select("delivery_fee")
+      .eq("id", 1)
+      .single()
+      .then(({ data }) => {
+        if (data?.delivery_fee != null) setConfiguredFee(data.delivery_fee);
+      });
+  }, []);
 
   const cartTotal = subtotal();
+  const deliveryFee = getDeliveryFee(cartTotal, configuredFee);
+  const totalWithDelivery = cartTotal + deliveryFee;
+  const isFree = cartTotal >= FREE_DELIVERY_THRESHOLD;
 
   if (items.length === 0 && !redirecting) {
     return (
@@ -37,7 +55,8 @@ export default function CheckoutPage() {
     startTransition(async () => {
       const result = await createOrderAndPayment(formData, cartJson);
       if (result.ok) {
-        clear();
+        // Keep cart until payment is confirmed — do NOT clear here.
+        // Success page will clear after webhook marks paid, cancel/failed keeps cart.
         setRedirecting(true);
         window.location.href = result.redirectUrl;
       } else {
@@ -108,30 +127,43 @@ export default function CheckoutPage() {
           </div>
         </section>
 
-        <section className="rounded-md border border-line bg-surface p-5">
-          <h2 className="text-[0.6875rem] font-bold uppercase tracking-widest text-bone">
-            Захиалга
-          </h2>
-          <ul className="mt-3 divide-y divide-line">
+        <section className="rounded-xl border border-border bg-card p-5 shadow-card">
+          <h2 className="eyebrow">Захиалга</h2>
+          <ul className="mt-3 divide-y divide-border">
             {items.map((i) => (
-              <li
-                key={i.productId}
-                className="flex justify-between py-2.5 text-sm"
-              >
-                <span className="text-bone">
-                  {i.name}{" "}
-                  <span className="text-mute">× {formatKg(i.quantityKg)}</span>
+              <li key={i.productId} className="flex justify-between py-2.5 text-sm">
+                <span>
+                  {i.name} <span className="text-muted-foreground">× {formatKg(i.quantityKg)}</span>
                 </span>
-                <span>{formatMnt(Math.round(i.pricePerKg * i.quantityKg))}</span>
+                <span className="font-medium">{formatMnt(Math.round(i.pricePerKg * i.quantityKg))}</span>
               </li>
             ))}
           </ul>
-          <div className="mt-3 flex justify-between border-t border-line pt-3">
-            <span className="text-sm font-semibold">Нийт дүн</span>
-            <span className="font-display text-lg font-bold">
-              {formatMnt(cartTotal)}
-            </span>
+          <div className="mt-3 space-y-2 border-t border-border pt-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Бүтээгдэхүүн</span>
+              <span>{formatMnt(cartTotal)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Хүргэлт</span>
+              {isFree ? (
+                <span className="font-semibold text-green-600">Үнэгүй</span>
+              ) : (
+                <span>{formatMnt(deliveryFee)}</span>
+              )}
+            </div>
+            <div className="flex justify-between border-t border-border pt-2 text-base font-bold">
+              <span>Нийт</span>
+              <span className="text-display text-lg">{formatMnt(totalWithDelivery)}</span>
+            </div>
           </div>
+          {isFree ? (
+            <p className="mt-2 text-xs text-green-600">✓ {formatMnt(FREE_DELIVERY_THRESHOLD)} дээш — хүргэлт үнэгүй</p>
+          ) : (
+            <p className="mt-2 text-xs text-muted-foreground">
+              {formatMnt(FREE_DELIVERY_THRESHOLD - cartTotal)} нэмбэл хүргэлт үнэгүй
+            </p>
+          )}
         </section>
 
         {error && (
