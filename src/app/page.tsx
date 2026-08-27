@@ -13,33 +13,41 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* Hero - like mongol-mah, with extra breathing room */}
-      <section className="relative border-b border-border surface-deep">
+      {/* Hero - steppe image background, keep palette/CTA */}
+      <section className="relative overflow-hidden border-b border-border height-[80vh] lg:h-[85vh]">
+        {/* Background image - place your provided steppe image as /public/hero-steppe.jpg */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/steppe-hero.jpg"
+          alt="Тал дээр бэлчиж буй адуу, үхэр — урд нь модон тавцан дээрх шинэ мах"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        {/* Keep text readable — dark overlay on left, keep palette */}
         <div
-          className="absolute inset-0 hairline-grid opacity-60"
+          className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/10"
           aria-hidden="true"
         />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 lg:grid-cols-[1.05fr_1fr] lg:py-28 lg:gap-16">
-          <div>
-            <p className="eyebrow text-primary">Малчнаас шууд · 9911-2233</p>
-            <h1 className="mt-5 font-display text-[2.6rem] font-semibold leading-[0.88] tracking-[-0.03em] sm:text-6xl lg:text-[5.25rem]">
-              <span className="block font-medium tracking-[-0.02em]">
-                Шинэхэн монгол
-              </span>
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
+          aria-hidden="true"
+        />
+
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-16 lg:grid-cols-2 lg:py-46 lg:px-0">
+          <div className="max-w-xl">
+            <h1 className="mt-5 font-display text-[2.6rem] font-semibold leading-[0.88] tracking-[-0.03em] text-white sm:text-6xl lg:text-[5rem]">
+              <span className="block font-medium">Малчны хотноос.</span>
               <span className="block mt-1">
                 <span className="font-bold italic tracking-[-0.04em] text-primary">
-                  мах
+                  Таны
                 </span>
-                <span className="font-light text-foreground">,</span>
-                <span className="font-medium"> гэрийн</span>
+                <span className="font-medium text-white"> ширээнд.</span>
               </span>
-              <span className="block font-medium">хаалган дээр.</span>
             </h1>
-            <p className="mt-6 max-w-md text-base text-muted-foreground">
-              Үхэр, адуу, хонь, ямаа, тахианы мах килограммаар. Онлайнаар
-              захиалж, банкаар төлөөд 24 цагийн дотор хүргэлтээ хүлээн авна.
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-white/85 sm:text-base">
+              Монголын өргөн талын малчдын гараас шууд авчирсан чанартай,
+              шинэхэн махыг бид таны гэрт хүргэнэ.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/products" className="btn-primary">
                 Мах захиалах
                 <svg
@@ -54,43 +62,17 @@ export default async function HomePage() {
                   <path d="m12 5 7 7-7 7" />
                 </svg>
               </Link>
-              <Link href="/track" className="btn-secondary">
-                Захиалгаа шалгах
+              <Link
+                href="/products"
+                className="inline-flex h-10 items-center rounded-md border border-white/20 bg-white/10 px-6 text-sm font-medium text-white backdrop-blur hover:bg-white/15"
+              >
+                Бүтээгдэхүүн үзэх
               </Link>
             </div>
-            <dl className="mt-12 grid max-w-md grid-cols-3 gap-4 border-t border-border pt-6">
-              <div>
-                <dt className="text-display text-2xl text-primary">24ц</dt>
-                <dd className="mt-1 text-xs text-muted-foreground">хүргэлт</dd>
-              </div>
-              <div>
-                <dt className="text-display text-2xl text-primary">16+</dt>
-                <dd className="mt-1 text-xs text-muted-foreground">төрөл</dd>
-              </div>
-              <div>
-                <dt className="text-display text-2xl text-primary">100%</dt>
-                <dd className="mt-1 text-xs text-muted-foreground">
-                  гарал тодорхой
-                </dd>
-              </div>
-            </dl>
+            <div className="mt-8 flex flex-wrap gap-2"></div>
           </div>
-          <div className="relative">
-            <div className="overflow-hidden rounded-2xl border border-border shadow-lift">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://mongol-mah.lovable.app/__l5e/assets-v1/1893ad6f-8b62-495f-9ffa-9566efd44cb8/kitchen.webp"
-                alt="Модон банзан дээрх шинэ үхрийн мах"
-                className="aspect-[4/3] w-full object-cover"
-              />
-            </div>
-            <div className="absolute -bottom-6 left-4 max-w-56 rounded-xl surface-cream p-4 shadow-lift sm:left-8">
-              <p className="eyebrow text-primary">Онцлог</p>
-              <p className="mt-2 text-sm font-bold leading-snug">
-                Тухайн өдрийн бэлтгэл — хөргөсөн, хатаагаагүй шинэ мах.
-              </p>
-            </div>
-          </div>
+          {/* right side intentionally empty — meat on board is part of background image */}
+          <div className="hidden lg:block" aria-hidden="true" />
         </div>
       </section>
 

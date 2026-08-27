@@ -144,14 +144,8 @@ export default async function OrderDetailPage({
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-mute">Арга</dt>
-                <dd className="uppercase">{order.payment_method}</dd>
-              </div>
-              <div className="flex justify-between gap-2">
-                <dt className="shrink-0 text-mute">Wire ID</dt>
-                <dd className="break-all font-mono text-xs text-bone">
-                  {order.wire_payment_id ?? "—"}
-                </dd>
+                <dt className="text-muted-foreground">Арга</dt>
+                <dd>{order.payment_method === "wire" ? "Интернэт банк" : order.payment_method === "cash" ? "Бэлэн" : "Бусад"}</dd>
               </div>
             </dl>
           </section>

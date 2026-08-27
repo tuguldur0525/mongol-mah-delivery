@@ -210,6 +210,20 @@ export async function getOrderByNumber(
   return (data as OrderWithItems) ?? null;
 }
 
+/** Lookup orders by phone — 8-digit Mongolian number. Returns newest first, max 10. */
+export async function getOrdersByPhone(phone: string): Promise<OrderWithItems[]> {
+  const cleaned = phone.replace(/\D/g, "").slice(-8);
+  if (!/^\d{8}$/.test(cleaned)) return [];
+  const supabase = createAdminClient();
+  const { data } = await supabase
+    .from("orders")
+    .select("*, order_items(*)")
+    .eq("phone", cleaned)
+    .order("created_at", { ascending: false })
+    .limit(10);
+  return (data as OrderWithItems[]) ?? [];
+}
+
 /** Retry payment for an existing pending/failed order — no duplicate orders. */
 export async function retryPayment(
   orderNumber: string,
