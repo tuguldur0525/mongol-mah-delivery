@@ -13,42 +13,35 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* Hero - steppe image background, keep palette/CTA */}
       <section className="relative overflow-hidden border-b border-border height-[80vh] lg:h-[85vh]">
-        {/* Background image - place your provided steppe image as /public/hero-steppe.jpg */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/steppe-hero.jpg"
+          src="/hero-steppe.jpg"
           alt="Тал дээр бэлчиж буй адуу, үхэр — урд нь модон тавцан дээрх шинэ мах"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover object-[62%_78%] sm:object-[68%_35%] lg:object-center"
         />
-        {/* Keep text readable — dark overlay on left, keep palette */}
+        {/* Mobile: top dark for text readability, bottom stronger for meat separation */}
         <div
-          className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/10"
-          aria-hidden="true"
-        />
-        <div
-          className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
+          className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/35 to-black/70 sm:bg-gradient-to-t sm:from-black/70 sm:via-black/30 sm:to-black/15 lg:bg-gradient-to-r lg:from-black/80 lg:via-black/55 lg:to-transparent"
           aria-hidden="true"
         />
 
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-16 lg:grid-cols-2 lg:py-46 lg:px-0">
-          <div className="max-w-xl">
-            <h1 className="mt-5 font-display text-[2.6rem] font-semibold leading-[0.88] tracking-[-0.03em] text-white sm:text-6xl lg:text-[5rem]">
-              <span className="block font-medium">Малчны хотноос.</span>
-              <span className="block mt-1">
+        <div className="relative mx-auto flex min-h-[560px] max-w-7xl items-end px-5 pb-8 pt-10 sm:min-h-[520px] sm:items-end sm:px-6 sm:pb-12 lg:min-h-[560px] lg:grid lg:grid-cols-2 lg:items-end lg:gap-8 lg:px-8 lg:pb-16 lg:pt-24">
+          <div className="w-full max-w-xl py-6 sm:py-4">
+            <h1 className="font-display text-[1.95rem] font-semibold leading-[0.9] tracking-[-0.03em] text-white sm:mt-4 sm:text-6xl lg:text-[5rem]">
+              <span className="block font-medium">Малчны хотноос,</span>
+              <span className="block">
                 <span className="font-bold italic tracking-[-0.04em] text-primary">
                   Таны
                 </span>
-                <span className="font-medium text-white"> ширээнд.</span>
+                <span className="font-medium text-white"> ширээнд</span>
               </span>
             </h1>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-white/85 sm:text-base">
-              Монголын өргөн талын малчдын гараас шууд авчирсан чанартай,
-              шинэхэн махыг бид таны гэрт хүргэнэ.
+            <p className="mt-3 max-w-[320px] text-[13px] leading-relaxed text-white/90 sm:mt-4 sm:max-w-md sm:text-base">
+              Монголын өргөн талын малчдын гараас шууд — шинэхэн, гарал тодорхой
+              махыг 24 цагийн дотор.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/products" className="btn-primary">
+            <div className="mt-6 flex flex-wrap gap-3 ">
+              <Link href="/products" className="btn-primary justify-center ">
                 Мах захиалах
                 <svg
                   width="16"
@@ -62,22 +55,22 @@ export default async function HomePage() {
                   <path d="m12 5 7 7-7 7" />
                 </svg>
               </Link>
+
               <Link
                 href="/products"
-                className="inline-flex h-10 items-center rounded-md border border-white/20 bg-white/10 px-6 text-sm font-medium text-white backdrop-blur hover:bg-white/15"
+                className="inline-flex h-11 items-center justify-center rounded-md border border-white/25 bg-white/10 px-6 text-sm font-medium text-white backdrop-blur hover:bg-white/15"
               >
                 Бүтээгдэхүүн үзэх
               </Link>
             </div>
-            <div className="mt-8 flex flex-wrap gap-2"></div>
+            <div className="mt-6 flex gap-2"></div>
           </div>
-          {/* right side intentionally empty — meat on board is part of background image */}
           <div className="hidden lg:block" aria-hidden="true" />
         </div>
       </section>
 
-      {/* Features - breathing room, separated */}
-      <section className="border-y border-border bg-card">
+      {/* Features - hidden on mobile */}
+      <section className="hidden border-y border-border bg-card md:block">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 lg:py-16 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex gap-3">
             <span className="grid size-9 shrink-0 place-items-center rounded-sm bg-primary/12 text-primary">
@@ -175,8 +168,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Categories - extra white space, airy */}
-      <section className="mx-auto max-w-7xl px-4 py-16 lg:py-24">
+      {/* Categories - hidden on mobile */}
+      <section className="mx-auto hidden max-w-7xl px-4 py-16 md:block lg:py-24">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="eyebrow text-primary">Төрлүүд</p>
@@ -279,11 +272,25 @@ export default async function HomePage() {
               </p>
             </div>
           ) : (
-            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-              {featured.map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} />
-              ))}
-            </div>
+            <>
+              {/* Desktop grid */}
+              <div className="mt-12 hidden gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+                {featured.map((p, i) => (
+                  <ProductCard key={p.id} product={p} index={i} />
+                ))}
+              </div>
+              {/* Mobile: horizontal swipe, compact cards — no big vertical scroll */}
+              <div className="mt-8 -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory scrollbar-none sm:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {featured.map((p) => (
+                  <div key={p.id} className="shrink-0 basis-[78%] snap-center">
+                    <ProductCard product={p} />
+                  </div>
+                ))}
+              </div>
+              <p className="mt-2 text-center text-xs text-muted-foreground sm:hidden">
+                ← шудраад үзэх →
+              </p>
+            </>
           )}
         </div>
       </section>
