@@ -150,11 +150,11 @@ export default async function HomePage() {
               takhia: "Тахианы мах",
             };
             const greyImageMap: Record<string, string> = {
-              uher: "https://mongol-mah.lovable.app/__l5e/assets-v1/1a449aa1-8c7e-4435-9c0f-cc1a233cf8cf/beef-grey.webp",
-              aduu: "https://mongol-mah.lovable.app/__l5e/assets-v1/1071348e-6f8b-43f0-8602-29950e773759/horse-meat.jpg",
-              khon: "https://mongol-mah.lovable.app/__l5e/assets-v1/24809b6b-e0bb-45e3-a4a2-d7495e3470a4/lamb-grey.webp",
-              yamaa: "https://mongol-mah.lovable.app/__l5e/assets-v1/e1cbb073-b5d9-45bc-9a80-883332abf920/goat-meat.jpg",
-              takhia: "https://mongol-mah.lovable.app/__l5e/assets-v1/dcb0f657-3a25-401f-a968-e377fca2599d/poultry-grey.webp",
+              uher: "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/beef-grey.webp",
+              aduu: "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/horse-grey.jpeg",
+              khon: "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/lamb-grey.webp",
+              yamaa: "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/goat-meat.jpg",
+              takhia: "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/poultry-grey.webp",
             };
             const label = labelMap[cat.slug] ?? `${cat.name} мах`;
             const imgSrc = greyImageMap[cat.slug] ?? cat.image_url;

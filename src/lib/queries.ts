@@ -21,13 +21,41 @@ export async function getProducts(options: {
   search?: string;
 }): Promise<ProductWithCategory[]> {
   const supabase = await createClient();
+  // Resolve category slug → id first (reliable vs foreign table filter)
+  if (options.categorySlug) {
+    const { data: cat } = await supabase
+      .from("categories")
+      .select("id")
+      .eq("slug", options.categorySlug)
+      .maybeSingle();
+    if (!cat) return [];
+    // filter by category_id directly
+    let filtered = supabase
+      .from("products")
+      .select("*, categories(id, name, slug)")
+      .eq("category_id", cat.id);
+    if (options.search) filtered = filtered.ilike("name", `%${options.search}%`);
+    if (options.inStockOnly) filtered = filtered.gt("stock_kg", 0).eq("is_available", true);
+    if (options.minPrice != null) filtered = filtered.gte("price_per_kg", options.minPrice);
+    if (options.maxPrice != null) filtered = filtered.lte("price_per_kg", options.maxPrice);
+    switch (options.sort) {
+      case "price_asc":
+        filtered = filtered.order("price_per_kg", { ascending: true });
+        break;
+      case "price_desc":
+        filtered = filtered.order("price_per_kg", { ascending: false });
+        break;
+      default:
+        filtered = filtered.order("created_at", { ascending: false });
+    }
+    if (options.limit) filtered = filtered.limit(options.limit);
+    const { data } = await filtered;
+    return (data as ProductWithCategory[]) ?? [];
+  }
+
   let query = supabase
     .from("products")
     .select("*, categories(id, name, slug)");
-
-  if (options.categorySlug) {
-    query = query.eq("categories.slug", options.categorySlug);
-  }
   if (options.search) {
     query = query.ilike("name", `%${options.search}%`);
   }
