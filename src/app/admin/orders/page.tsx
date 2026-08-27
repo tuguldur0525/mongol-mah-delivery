@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMnt } from "@/lib/validations";
 import { ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/components/order/status";
 import type { Order, OrderStatus, OrderPaymentStatus } from "@/types";
+import { formatUBDateTime } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
@@ -138,7 +139,7 @@ export default async function AdminOrdersPage({
                 </td>
                 <td className="px-4 py-3 text-xs">{ORDER_STATUS_LABELS[o.order_status as OrderStatus]}</td>
                 <td className="px-4 py-3 text-xs whitespace-nowrap text-muted-foreground">
-                  {new Date(o.created_at).toLocaleString("mn-MN")}
+                  {formatUBDateTime(o.created_at)}
                 </td>
               </tr>
             ))}

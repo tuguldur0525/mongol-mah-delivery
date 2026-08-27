@@ -9,6 +9,7 @@ import {
 } from "@/components/order/status";
 import type { OrderPaymentStatus } from "@/types";
 import { AdminOrderActions } from "@/components/admin/order-actions";
+import { formatUBDateTime } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
@@ -49,8 +50,8 @@ export default async function AdminOrderDetailPage({
           orderStatus={order.order_status}
         />
       </div>
-      <p className="mt-1 text-xs text-mute">
-        {new Date(order.created_at).toLocaleString("mn-MN")}
+      <p className="mt-1 text-xs text-muted-foreground">
+        {formatUBDateTime(order.created_at)} · Asia/Ulaanbaatar
       </p>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_300px]">
@@ -166,8 +167,8 @@ export default async function AdminOrderDetailPage({
               </div>
               {order.paid_at && (
                 <div className="flex justify-between">
-                  <span className="text-mute">Төлсөн</span>
-                  <span>{new Date(order.paid_at).toLocaleString("mn-MN")}</span>
+                  <span className="text-muted-foreground">Төлсөн</span>
+                  <span>{formatUBDateTime(order.paid_at)}</span>
                 </div>
               )}
             </div>

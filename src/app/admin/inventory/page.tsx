@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKg } from "@/lib/validations";
+import { formatUBDateTime } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
@@ -72,7 +73,7 @@ export default async function AdminInventoryPage() {
               {(recentTx ?? []).map((t) => (
                 <tr key={t.id} className="border-b border-border/50">
                   <td className="px-4 py-3 text-xs whitespace-nowrap text-muted-foreground">
-                    {new Date(t.created_at).toLocaleString("mn-MN")}
+                    {formatUBDateTime(t.created_at)}
                   </td>
                   <td className="px-4 py-3 font-medium">{t.products?.name ?? "—"}</td>
                   <td className="px-4 py-3 text-xs">{t.type}</td>

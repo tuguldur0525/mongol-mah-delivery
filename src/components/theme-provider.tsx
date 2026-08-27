@@ -16,14 +16,27 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const stored = localStorage.getItem("theme") as Theme | null;
-    const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-    const initial: Theme = stored ?? (prefersLight ? "light" : "dark");
+    const mq = window.matchMedia("(prefers-color-scheme: light)");
+    const systemTheme: Theme = mq.matches ? "light" : "dark";
+    const initial: Theme = stored ?? systemTheme;
     setTheme(initial);
     document.documentElement.setAttribute("data-theme", initial);
+
+    // Follow system theme if user hasn't manually chosen
+    if (!stored) {
+      const handler = (e: MediaQueryListEvent) => {
+        const sys: Theme = e.matches ? "light" : "dark";
+        setTheme(sys);
+        document.documentElement.setAttribute("data-theme", sys);
+      };
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    }
   }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
+    // Only persist if user toggled; initial system follow also persists after toggle
     localStorage.setItem("theme", theme);
   }, [theme]);
 

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatKg } from "@/lib/validations";
 import { StockChangeForm } from "@/components/admin/stock-change-form";
+import { formatUBDateTime } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
@@ -60,8 +61,8 @@ export default async function ProductInventoryPage({
                       {t.quantity_kg} кг)
                     </span>
                   </p>
-                  <p className="text-xs text-mute">
-                    {t.note ?? "—"} · {new Date(t.created_at).toLocaleString("mn-MN")}
+                  <p className="text-xs text-muted-foreground">
+                    {t.note ?? "—"} · {formatUBDateTime(t.created_at)}
                   </p>
                 </div>
               </li>
