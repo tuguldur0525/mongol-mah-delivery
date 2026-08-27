@@ -1,11 +1,15 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand-logo";
 
 export function Footer() {
   return (
     <footer className="mt-24 border-t border-border surface-deep">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
-          <p className="text-display text-3xl">Монгол Мах</p>
+          <div className="flex items-center gap-3">
+            <BrandLogo size={32} />
+            <p className="text-display text-3xl">Монгол Мах</p>
+          </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             Малчнаас шууд. Шинэ, чанартай мах Улаанбаатар хотод хүргэнэ. Килограммаар
             нарийн хэрчиж, хүйтэн хэлхээгээр тээвэрлэнэ.

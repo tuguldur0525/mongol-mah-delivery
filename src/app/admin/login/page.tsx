@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { login } from "@/actions/auth";
+import { BrandLogo } from "@/components/brand-logo";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,9 @@ export default async function AdminLoginPage({
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-sm flex-col justify-center px-4">
       <div className="text-center">
-        <span className="mx-auto grid size-12 place-items-center rounded-sm surface-blood text-display text-lg">М</span>
+        <div className="mx-auto">
+          <BrandLogo size={48} />
+        </div>
         <h1 className="mt-4 text-display text-2xl">Монгол Мах</h1>
         <p className="eyebrow mt-1 text-primary">админ</p>
         <p className="mt-2 text-sm text-muted-foreground">Нэвтрэх мэдээллээ оруулна уу</p>

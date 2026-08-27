@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AdminNav } from "@/components/admin/nav";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { BrandLogo, BrandWordmark } from "@/components/brand-logo";
 
 export const dynamic = "force-dynamic";
 
@@ -59,11 +60,8 @@ export default async function AdminLayout({
         <header className="border-b border-border bg-background/85 backdrop-blur-xl">
           <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4">
             <Link href="/admin" className="flex items-center gap-2.5">
-              <span className="grid size-9 place-items-center rounded-sm surface-blood text-display text-base">М</span>
-              <span className="leading-none">
-                <span className="text-display text-xl tracking-tight">Монгол Мах</span>
-                <span className="mt-1 block eyebrow text-primary">админ</span>
-              </span>
+              <BrandLogo size={36} />
+              <BrandWordmark />
             </Link>
             <div className="ml-auto flex items-center gap-1">
               <Link href="/" className="hidden text-sm text-muted-foreground hover:text-foreground transition-colors sm:block">

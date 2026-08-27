@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/store/cart";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SearchModal } from "@/components/search-modal";
+import { BrandLogo, BrandWordmark } from "@/components/brand-logo";
 import { useState } from "react";
 
 export function Header() {
@@ -57,13 +58,8 @@ export function Header() {
       <header className="border-b border-border bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-sm surface-blood text-display text-base">
-              М
-            </span>
-            <span className="leading-none">
-              <span className="text-display text-xl tracking-tight">Монгол Мах</span>
-              <span className="mt-1 block eyebrow text-primary">premium meat co.</span>
-            </span>
+            <BrandLogo size={36} />
+            <BrandWordmark />
           </Link>
 
           <nav className="ml-8 hidden items-center gap-1 md:flex">
