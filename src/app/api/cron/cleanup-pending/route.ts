@@ -4,9 +4,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export const dynamic = "force-dynamic";
 
 /**
- * Vercel Cron / manual cleanup for abandoned pending Wire orders.
- * Deletes orders stuck in pending_payment/pending after 10 minutes
- * (user quit Wire gateway and cannot resume).
+ * Vercel Cron / manual cleanup for abandoned Wire orders.
+ * Deletes pending (gateway quit) and cancelled/failed orders after 24 hours
+ * (keeps transaction history for 24h instead of 10 min).
  * Call via: GET /api/cron/cleanup-pending
  * Protected by CRON_SECRET if set, otherwise service-role only.
  */
@@ -22,18 +22,17 @@ export async function GET(req: NextRequest) {
 
   const supabase = createAdminClient();
 
-  // Prefer RPC (handles index + returns count)
+  // Prefer RPC (handles index + returns count, 24h retention)
   const { data, error } = await supabase.rpc("cleanup_expired_pending_orders");
 
   if (error) {
-    // Fallback direct delete if RPC not yet migrated
-    const cutoff = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+    // Fallback direct delete if RPC not yet migrated (24h)
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    // delete pending 24h+ and cancelled/failed 24h+
     const { error: delError, count } = await supabase
       .from("orders")
       .delete({ count: "exact" })
-      .eq("payment_status", "pending")
-      .eq("order_status", "pending_payment")
-      .eq("stock_deducted", false)
+      .in("payment_status", ["pending", "cancelled", "failed"])
       .lt("created_at", cutoff);
 
     if (delError) {
