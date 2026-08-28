@@ -74,7 +74,7 @@ export function Footer() {
   return (
     <footer className="mt-24 border-t border-border surface-deep">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="grid gap-10 py-12 justify-between sm:grid-cols-3 lg:grid-cols-3">
+        <div className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-3">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3">
@@ -99,14 +99,12 @@ export function Footer() {
                 </a>
               ))}
             </div>
-            <p className="mt-5 eyebrow text-primary">
-              since 2026 · Ulaanbaatar
-            </p>
+            <p className="mt-5 eyebrow text-primary">Ulaanbaatar, Mongolia</p>
           </div>
 
           {/* Legal */}
-          <div className="px-30">
-            <p className="eyebrow text-foreground">Үйлчилгээний нөхцөл</p>
+          <div>
+            <p className="eyebrow text-foreground">Хууль</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
                 <Link
@@ -144,7 +142,7 @@ export function Footer() {
           </div>
 
           {/* Help */}
-          <div className="px-30">
+          <div>
             <p className="eyebrow text-foreground">Тусламж</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
