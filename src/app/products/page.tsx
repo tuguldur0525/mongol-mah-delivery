@@ -28,7 +28,7 @@ export default async function ProductsPage({
       ? "price_asc"
       : sp.sort === "price_desc"
         ? "price_desc"
-        : "newest";
+        : "price_asc";
 
   const hasActiveFilter = !!(cat || sp.q || sp.stock || sp.min || sp.max);
 
@@ -60,7 +60,6 @@ export default async function ProductsPage({
   };
 
   const sorts = [
-    { key: "newest", label: "Шинэ эхэндээ" },
     { key: "price_asc", label: "Хямд нь эхэндээ" },
     { key: "price_desc", label: "Үнэтэй нь эхэндээ" },
   ];
@@ -147,7 +146,7 @@ export default async function ProductsPage({
             <Link
               key={s.key}
               href={buildHref({ sort: s.key })}
-              className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium border transition-colors ${sp.sort === s.key || (s.key === "newest" && !sp.sort) ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium border transition-colors ${sp.sort === s.key || (!sp.sort && s.key === "price_asc") ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}
             >
               {s.label}
             </Link>
