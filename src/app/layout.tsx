@@ -4,6 +4,20 @@ import { Footer } from "@/components/layout/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import { Fraunces, Manrope } from "next/font/google";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
 export const metadata = {
   title: "Монгол Мах — Шинэ мах онлайнаар захиалах",
   description:
@@ -16,19 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="mn" suppressHydrationWarning>
+    <html lang="mn" suppressHydrationWarning className={`${manrope.variable} ${fraunces.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        {/* Exact same Google Fonts request as mongol-mah.lovable.app */}
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
-        />
         {/* Avoid FOUC for theme - same logic as ThemeProvider */}
         <script
           dangerouslySetInnerHTML={{

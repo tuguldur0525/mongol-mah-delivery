@@ -4,9 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/store/cart";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { SearchModal } from "@/components/search-modal";
+import dynamic from "next/dynamic";
 import { BrandLogo, BrandWordmark } from "@/components/brand-logo";
 import { useState } from "react";
+
+const SearchModal = dynamic(
+  () => import("@/components/search-modal").then((module) => module.SearchModal),
+  { ssr: false },
+);
 
 export function Header() {
   const pathname = usePathname();

@@ -217,10 +217,12 @@ export default async function HomePage() {
               >
                 <div className="aspect-square overflow-hidden bg-muted">
                   {imgSrc ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={imgSrc}
                       alt={label}
+                      width={400}
+                      height={400}
+                      loading="lazy"
                       className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${cat.slug === "aduu" || cat.slug === "yamaa" ? "grayscale" : ""}`}
                     />
                   ) : (
@@ -372,10 +374,12 @@ export default async function HomePage() {
                 className="group overflow-hidden rounded-xl border border-border bg-card hover:border-primary/40 transition-all"
               >
                 <div className="aspect-[4/3] overflow-hidden bg-muted">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={r.image}
                     alt={r.title}
+                    width={640}
+                    height={480}
+                    loading="lazy"
                     className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
