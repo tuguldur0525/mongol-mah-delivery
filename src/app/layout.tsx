@@ -30,7 +30,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="mn" suppressHydrationWarning className={`${manrope.variable} ${fraunces.variable}`}>
+    <html
+      lang="mn"
+      suppressHydrationWarning
+      className={`${manrope.variable} ${fraunces.variable}`}
+    >
       <head>
         {/* Avoid FOUC for theme - same logic as ThemeProvider */}
         <script

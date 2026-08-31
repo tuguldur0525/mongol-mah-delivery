@@ -9,7 +9,8 @@ import { BrandLogo, BrandWordmark } from "@/components/brand-logo";
 import { useState } from "react";
 
 const SearchModal = dynamic(
-  () => import("@/components/search-modal").then((module) => module.SearchModal),
+  () =>
+    import("@/components/search-modal").then((module) => module.SearchModal),
   { ssr: false },
 );
 
