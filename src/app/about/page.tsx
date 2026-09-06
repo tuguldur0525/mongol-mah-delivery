@@ -15,7 +15,8 @@ export default function AboutPage() {
           <div>
             <p className="eyebrow text-primary">Түүх</p>
             <h2 className="mt-2 text-3xl text-display">
-              Яагаад бид энэ ажлыг хийдэг вэ?
+              Бидний зорилго — Монголын малчны хотын шинэ махыг шууд таны гал
+              тогоонд хүргэх
             </h2>
             <div className="mt-6 space-y-4 text-sm leading-relaxed text-muted-foreground">
               <p>
