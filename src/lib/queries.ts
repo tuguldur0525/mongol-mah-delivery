@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
-import type { Category, ProductWithCategory } from "@/types";
+import type { Category, ProductBundle, ProductWithCategory } from "@/types";
 
 export async function getCategories(): Promise<Category[]> {
   const supabase = await createClient();
@@ -9,6 +9,23 @@ export async function getCategories(): Promise<Category[]> {
     .select("*")
     .order("sort_order");
   return data ?? [];
+}
+
+export async function getProductBundles(limit?: number): Promise<ProductBundle[]> {
+  const supabase = await createClient();
+  let query = supabase
+    .from("product_bundles")
+    .select(
+      "*, product_bundle_items(id, bundle_id, product_id, quantity_kg, products(id, name, slug, price_per_kg, stock_kg, image_url, is_available))",
+    )
+    .eq("is_active", true)
+    .order("sort_order")
+    .order("created_at", { ascending: false });
+  if (limit) query = query.limit(limit);
+  const { data } = await query;
+  return ((data as ProductBundle[]) ?? []).filter((bundle) =>
+    bundle.product_bundle_items.every((item) => item.products?.is_available),
+  );
 }
 
 export async function getProducts(options: {

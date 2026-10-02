@@ -92,6 +92,12 @@ export function Header() {
               Бүтээгдэхүүн
             </Link>
             <Link
+              href="/bundles"
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${isActive("/bundles") ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              Багц
+            </Link>
+            <Link
               href="/track"
               className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${isActive("/track") ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
             >

@@ -1,15 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getCategories, getProducts } from "@/lib/queries";
+import { getProductBundles, getProducts } from "@/lib/queries";
 import { ProductCard } from "@/components/products/product-card";
+import { BundleCard } from "@/components/products/bundle-card";
 import { recipes } from "@/lib/recipes";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [categories, featured] = await Promise.all([
-    getCategories(),
+  const [featured, bundles] = await Promise.all([
     getProducts({ limit: 6, inStockOnly: false }),
+    getProductBundles(3),
   ]);
 
   return (
@@ -227,6 +228,25 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      {bundles.length > 0 && (
+        <section className="border-b border-border bg-background">
+          <div className="mx-auto max-w-7xl px-4 py-16 lg:py-20">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="eyebrow text-primary">Багц бүтээгдэхүүн</p>
+                <h2 className="mt-2 text-4xl text-display">Нэг дор бүрдүүлсэн мах</h2>
+              </div>
+              <Link href="/bundles" className="btn-secondary">
+                Бүх багцыг үзэх
+              </Link>
+            </div>
+            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {bundles.map((bundle) => <BundleCard key={bundle.id} bundle={bundle} />)}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Steps - more whitespace before CTA */}
       <section className="mx-auto max-w-7xl px-4 py-20 lg:py-28">

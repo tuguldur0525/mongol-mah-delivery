@@ -33,6 +33,26 @@ export const productFormSchema = z.object({
   is_available: z.boolean(),
 });
 
+export const productBundleSchema = z.object({
+  name: z.string().trim().min(2, "Багцын нэр оруулна уу").max(100),
+  description: z.string().trim().max(1000).optional().or(z.literal("")),
+  image_url: z.string().trim().optional().or(z.literal("")),
+  is_active: z.boolean(),
+  sort_order: z.coerce.number().int().min(0),
+  items: z
+    .array(
+      z.object({
+        product_id: z.string().uuid(),
+        quantity_kg: z.coerce.number().positive().max(1000),
+      }),
+    )
+    .min(1, "Багцад бүтээгдэхүүн нэмнэ үү")
+    .refine(
+      (items) => new Set(items.map((item) => item.product_id)).size === items.length,
+      "Нэг бүтээгдэхүүнийг багцад давхар оруулах боломжгүй",
+    ),
+});
+
 export const stockChangeSchema = z.object({
   product_id: z.string().uuid(),
   quantity_kg: z.coerce.number().positive("Хэмжээгээ оруулна уу"),
