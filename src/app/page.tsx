@@ -172,76 +172,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Categories - hidden on mobile */}
-      <section className="mx-auto hidden max-w-7xl px-4 py-16 md:block lg:py-24">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="eyebrow text-primary">Төрлүүд</p>
-            <h2 className="mt-2 text-4xl text-display">Ямар мах авах вэ?</h2>
-          </div>
-          <Link
-            href="/products"
-            className="inline-flex h-9 items-center rounded-md border border-input bg-background px-4 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
-          >
-            Бүгдийг харах
-          </Link>
-        </div>
-        <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5 lg:gap-8">
-          {categories.map((cat) => {
-            const labelMap: Record<string, string> = {
-              uher: "Үхрийн мах",
-              aduu: "Адууны мах",
-              khon: "Хонины мах",
-              yamaa: "Ямааны мах",
-              gahai: "Гахайн мах",
-              takhia: "Тахианы мах",
-            };
-            const greyImageMap: Record<string, string> = {
-              uher: "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/beef-grey.png",
-              aduu: "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/horse-grey.png",
-              khon: "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/lamb-grey.png",
-              yamaa:
-                "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/goat-meat.png",
-              gahai:
-                "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/prok-grey.png",
-              takhia:
-                "https://nxbxkwjfzuujzdwqtnxa.supabase.co/storage/v1/object/public/category%20images/poultry-grey.png",
-            };
-            const label = labelMap[cat.slug] ?? `${cat.name} мах`;
-            const imgSrc = greyImageMap[cat.slug] ?? cat.image_url;
-            return (
-              <Link
-                key={cat.id}
-                href={`/products?category=${cat.slug}`}
-                className="group overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-primary/40 hover:-translate-y-0.5"
-              >
-                <div className="aspect-square overflow-hidden bg-muted">
-                  {imgSrc ? (
-                    <Image
-                      src={imgSrc}
-                      alt={label}
-                      width={400}
-                      height={400}
-                      loading="lazy"
-                      className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 ${cat.slug === "aduu" || cat.slug === "yamaa" ? "grayscale" : ""}`}
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-muted">
-                      <span className="text-display text-2xl text-muted-foreground">
-                        {cat.name.slice(0, 1)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="border-t border-border bg-card p-3 text-center">
-                  <p className="text-sm font-medium">{label}</p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
       {/* Featured - airy, separated from categories */}
       <section className="mt-6 border-y border-border bg-card/40">
         <div className="mx-auto max-w-7xl px-4 py-20 lg:py-28">
@@ -280,7 +210,7 @@ export default async function HomePage() {
           ) : (
             <>
               {/* Desktop grid */}
-              <div className="mt-12 hidden gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+              <div className="mt-12 hidden gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
                 {featured.map((p, i) => (
                   <ProductCard key={p.id} product={p} index={i} />
                 ))}
