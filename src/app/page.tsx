@@ -235,14 +235,18 @@ export default async function HomePage() {
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="eyebrow text-primary">Багц бүтээгдэхүүн</p>
-                <h2 className="mt-2 text-4xl text-display">Нэг дор бүрдүүлсэн мах</h2>
+                <h2 className="mt-2 text-4xl text-display">
+                  Нэг дор бүрдүүлсэн мах
+                </h2>
               </div>
               <Link href="/bundles" className="btn-secondary">
                 Бүх багцыг үзэх
               </Link>
             </div>
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {bundles.map((bundle) => <BundleCard key={bundle.id} bundle={bundle} />)}
+              {bundles.map((bundle) => (
+                <BundleCard key={bundle.id} bundle={bundle} />
+              ))}
             </div>
           </div>
         </section>

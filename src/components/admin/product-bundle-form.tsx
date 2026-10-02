@@ -72,23 +72,53 @@ export function ProductBundleForm({
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <label htmlFor="name">Багцын нэр</label>
-            <input id="name" name="name" required minLength={2} maxLength={100} defaultValue={bundle?.name} />
+            <input
+              id="name"
+              name="name"
+              required
+              minLength={2}
+              maxLength={100}
+              defaultValue={bundle?.name}
+            />
           </div>
           <div className="sm:col-span-2">
             <label htmlFor="description">Тайлбар</label>
-            <textarea id="description" name="description" rows={3} defaultValue={bundle?.description ?? ""} />
+            <textarea
+              id="description"
+              name="description"
+              rows={3}
+              defaultValue={bundle?.description ?? ""}
+            />
           </div>
           <div>
             <label htmlFor="image_url">Зурагны URL</label>
-            <input id="image_url" name="image_url" type="url" defaultValue={bundle?.image_url ?? ""} placeholder="https://..." />
+            <input
+              id="image_url"
+              name="image_url"
+              type="url"
+              defaultValue={bundle?.image_url ?? ""}
+              placeholder="https://..."
+            />
           </div>
           <div>
             <label htmlFor="sort_order">Харагдах дараалал</label>
-            <input id="sort_order" name="sort_order" type="number" min={0} step={1} defaultValue={bundle?.sort_order ?? 0} />
+            <input
+              id="sort_order"
+              name="sort_order"
+              type="number"
+              min={0}
+              step={1}
+              defaultValue={bundle?.sort_order ?? 0}
+            />
           </div>
         </div>
         <label className="mt-4 flex cursor-pointer items-center gap-2 !mb-0">
-          <input type="checkbox" name="is_active" defaultChecked={bundle?.is_active ?? true} className="h-4 w-4" />
+          <input
+            type="checkbox"
+            name="is_active"
+            defaultChecked={bundle?.is_active ?? true}
+            className="h-4 w-4"
+          />
           <span className="text-sm">Дэлгүүрт харуулах</span>
         </label>
       </section>
@@ -97,25 +127,50 @@ export function ProductBundleForm({
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-sm font-semibold">Багцын бүрэлдэхүүн</h2>
-            <p className="mt-1 text-xs text-muted-foreground">Нэг багцад орох бүтээгдэхүүн бүрийн хэмжээг кг-аар оруулна.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Нэг багцад орох бүтээгдэхүүн бүрийн хэмжээг кг-аар оруулна.
+            </p>
           </div>
           <div className="flex w-full flex-wrap items-end gap-2 sm:w-auto">
             <div className="min-w-48 flex-1 sm:flex-none">
               <label htmlFor="component_product">Бүтээгдэхүүн</label>
-              <select id="component_product" value={selected} onChange={(event) => setSelected(event.target.value)}>
+              <select
+                id="component_product"
+                value={selected}
+                onChange={(event) => setSelected(event.target.value)}
+              >
                 <option value="">Сонгох...</option>
-                {products.filter((product) => !items.some((item) => item.product_id === product.id)).map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name}{product.is_available ? "" : " · Идэвхгүй"}
-                  </option>
-                ))}
+                {products
+                  .filter(
+                    (product) =>
+                      !items.some((item) => item.product_id === product.id),
+                  )
+                  .map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.name}
+                      {product.is_available ? "" : " · Идэвхгүй"}
+                    </option>
+                  ))}
               </select>
             </div>
             <div className="w-24">
               <label htmlFor="component_quantity">Кг</label>
-              <input id="component_quantity" type="number" min={0.01} max={1000} step={0.01} value={quantity} onChange={(event) => setQuantity(event.target.value)} />
+              <input
+                id="component_quantity"
+                type="number"
+                min={0.01}
+                max={1000}
+                step={0.01}
+                value={quantity}
+                onChange={(event) => setQuantity(event.target.value)}
+              />
             </div>
-            <button type="button" onClick={addItem} disabled={!selected} className="btn-secondary py-2.5 text-xs disabled:opacity-40">
+            <button
+              type="button"
+              onClick={addItem}
+              disabled={!selected}
+              className="btn-secondary py-2.5 text-xs disabled:opacity-40"
+            >
               Бүрэлдэхүүн нэмэх
             </button>
           </div>
@@ -126,8 +181,13 @@ export function ProductBundleForm({
             {items.map((item) => {
               const product = productMap.get(item.product_id);
               return (
-                <li key={item.product_id} className="flex flex-wrap items-center gap-3 py-3">
-                  <span className="min-w-36 flex-1 text-sm font-medium">{product?.name ?? "Бүтээгдэхүүн олдсонгүй"}</span>
+                <li
+                  key={item.product_id}
+                  className="flex flex-wrap items-center gap-3 py-3"
+                >
+                  <span className="min-w-36 flex-1 text-sm font-medium">
+                    {product?.name ?? "Бүтээгдэхүүн олдсонгүй"}
+                  </span>
                   <label className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span>Кг</span>
                     <input
@@ -139,12 +199,28 @@ export function ProductBundleForm({
                       value={item.quantity_kg}
                       onChange={(event) => {
                         const amount = Number(event.target.value);
-                        setItems((current) => current.map((entry) => entry.product_id === item.product_id ? { ...entry, quantity_kg: amount } : entry));
+                        setItems((current) =>
+                          current.map((entry) =>
+                            entry.product_id === item.product_id
+                              ? { ...entry, quantity_kg: amount }
+                              : entry,
+                          ),
+                        );
                       }}
                       className="!w-24"
                     />
                   </label>
-                  <button type="button" onClick={() => setItems((current) => current.filter((entry) => entry.product_id !== item.product_id))} className="text-xs text-destructive hover:underline">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setItems((current) =>
+                        current.filter(
+                          (entry) => entry.product_id !== item.product_id,
+                        ),
+                      )
+                    }
+                    className="text-xs text-destructive hover:underline"
+                  >
                     Хасах
                   </button>
                 </li>
@@ -152,13 +228,30 @@ export function ProductBundleForm({
             })}
           </ul>
         ) : (
-          <p className="mt-5 border-t border-border pt-4 text-sm text-muted-foreground">Одоогоор бүтээгдэхүүн нэмээгүй байна.</p>
+          <p className="mt-5 border-t border-border pt-4 text-sm text-muted-foreground">
+            Одоогоор бүтээгдэхүүн нэмээгүй байна.
+          </p>
         )}
       </section>
 
-      {error && <p role="alert" className="rounded-sm border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>}
-      <button type="submit" disabled={pending || items.length === 0} className="btn-primary w-full disabled:opacity-50">
-        {pending ? "Хадгалж байна..." : bundle ? "Багц хадгалах" : "Багц үүсгэх"}
+      {error && (
+        <p
+          role="alert"
+          className="rounded-sm border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+        >
+          {error}
+        </p>
+      )}
+      <button
+        type="submit"
+        disabled={pending || items.length === 0}
+        className="btn-primary w-full disabled:opacity-50"
+      >
+        {pending
+          ? "Хадгалж байна..."
+          : bundle
+            ? "Багц хадгалах"
+            : "Багц үүсгэх"}
       </button>
     </form>
   );

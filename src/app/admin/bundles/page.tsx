@@ -19,7 +19,9 @@ export default async function AdminBundlesPage() {
           <p className="eyebrow text-primary">Багцын худалдаа</p>
           <h1 className="mt-2 text-4xl text-display">Багц бүтээгдэхүүн</h1>
         </div>
-        <Link href="/admin/bundles/new" className="btn-primary">+ Багц үүсгэх</Link>
+        <Link href="/admin/bundles/new" className="btn-primary">
+          + Багц үүсгэх
+        </Link>
       </div>
 
       <div className="mt-8 overflow-x-auto rounded-md border border-border bg-card">
@@ -37,20 +39,42 @@ export default async function AdminBundlesPage() {
               <tr key={bundle.id} className="border-b border-border/50">
                 <td className="px-4 py-4 font-semibold">{bundle.name}</td>
                 <td className="min-w-64 px-4 py-4 text-muted-foreground">
-                  {(bundle.product_bundle_items ?? []).map((item: { products: { name: string } | null; quantity_kg: number }) => `${item.products?.name ?? "Устсан бүтээгдэхүүн"} · ${item.quantity_kg} кг`).join(", ")}
+                  {(bundle.product_bundle_items ?? [])
+                    .map(
+                      (item: {
+                        products: { name: string } | null;
+                        quantity_kg: number;
+                      }) =>
+                        `${item.products?.name ?? "Устсан бүтээгдэхүүн"} · ${item.quantity_kg} кг`,
+                    )
+                    .join(", ")}
                 </td>
                 <td className="px-4 py-4">
-                  <span className={bundle.is_active ? "tag tag-green" : "tag tag-red"}>
+                  <span
+                    className={
+                      bundle.is_active ? "tag tag-green" : "tag tag-red"
+                    }
+                  >
                     {bundle.is_active ? "Идэвхтэй" : "Нуугдсан"}
                   </span>
                 </td>
                 <td className="px-4 py-4">
-                  <ProductBundleActions bundleId={bundle.id} active={bundle.is_active} />
+                  <ProductBundleActions
+                    bundleId={bundle.id}
+                    active={bundle.is_active}
+                  />
                 </td>
               </tr>
             ))}
             {!bundles?.length && (
-              <tr><td colSpan={4} className="px-4 py-16 text-center text-muted-foreground">Багц хараахан үүсгээгүй байна.</td></tr>
+              <tr>
+                <td
+                  colSpan={4}
+                  className="px-4 py-16 text-center text-muted-foreground"
+                >
+                  Багц хараахан үүсгээгүй байна.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>

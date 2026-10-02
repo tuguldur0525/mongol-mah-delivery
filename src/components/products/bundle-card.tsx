@@ -21,7 +21,9 @@ export function BundleCard({ bundle }: { bundle: ProductBundle }) {
   const canAdd =
     ingredients.length > 0 &&
     ingredients.every((item) => {
-      const existing = cartItems.find((cartItem) => cartItem.productId === item.product_id);
+      const existing = cartItems.find(
+        (cartItem) => cartItem.productId === item.product_id,
+      );
       return (
         item.product.is_available &&
         Number(item.product.stock_kg) >=
@@ -65,7 +67,9 @@ export function BundleCard({ bundle }: { bundle: ProductBundle }) {
       <div className="p-4">
         <h2 className="text-lg font-semibold">{bundle.name}</h2>
         {bundle.description && (
-          <p className="mt-1 text-sm text-muted-foreground">{bundle.description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {bundle.description}
+          </p>
         )}
         <ul className="mt-4 divide-y divide-border border-y border-border text-sm">
           {ingredients.map((item) => (
