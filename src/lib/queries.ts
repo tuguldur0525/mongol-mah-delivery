@@ -33,9 +33,9 @@ export async function getProducts(options: {
     let filtered = supabase
       .from("products")
       .select("*, categories(id, name, slug)")
+      .eq("is_available", true)
       .eq("category_id", cat.id);
-    if (options.search) filtered = filtered.ilike("name", `%${options.search}%`);
-    if (options.inStockOnly) filtered = filtered.gt("stock_kg", 0).eq("is_available", true);
+    if (options.inStockOnly) filtered = filtered.gt("stock_kg", 0);
     if (options.minPrice != null) filtered = filtered.gte("price_per_kg", options.minPrice);
     if (options.maxPrice != null) filtered = filtered.lte("price_per_kg", options.maxPrice);
     switch (options.sort) {
@@ -55,12 +55,13 @@ export async function getProducts(options: {
 
   let query = supabase
     .from("products")
-    .select("*, categories(id, name, slug)");
+    .select("*, categories(id, name, slug)")
+    .eq("is_available", true);
   if (options.search) {
     query = query.ilike("name", `%${options.search}%`);
   }
   if (options.inStockOnly) {
-    query = query.gt("stock_kg", 0).eq("is_available", true);
+    query = query.gt("stock_kg", 0);
   }
   if (options.minPrice != null) {
     query = query.gte("price_per_kg", options.minPrice);
