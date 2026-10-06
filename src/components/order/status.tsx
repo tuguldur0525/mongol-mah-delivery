@@ -1,4 +1,4 @@
-import { formatMnt } from "@/lib/validations";
+import { formatKg, formatMnt } from "@/lib/validations";
 import type { OrderStatus, OrderPaymentStatus } from "@/types";
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
@@ -84,19 +84,24 @@ export function OrderTimeline({ status }: { status: OrderStatus }) {
 export function OrderItemsSummary({
   items,
 }: {
-  items: { product_name_snapshot: string; quantity_kg: number; price_per_kg: number; subtotal: number }[];
+  items: {
+    product_name_snapshot: string;
+    quantity_kg: number;
+    price_per_kg: number;
+    subtotal: number;
+  }[];
 }) {
   return (
     <ul className="divide-y divide-line">
-      {items.map((item) => (
+      {items.map((item, index) => (
         <li
-          key={item.product_name_snapshot}
+          key={`${item.product_name_snapshot}-${index}`}
           className="flex justify-between gap-3 py-3 text-sm"
         >
           <div>
             <p className="font-medium">{item.product_name_snapshot}</p>
             <p className="text-xs text-mute">
-              {formatMnt(item.price_per_kg)} / кг × {item.quantity_kg} кг
+              {formatMnt(item.price_per_kg)} / кг × {formatKg(item.quantity_kg)}
             </p>
           </div>
           <span className="shrink-0 font-semibold">{formatMnt(item.subtotal)}</span>

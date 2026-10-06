@@ -106,7 +106,7 @@ export default function CartPage() {
         <AnimatePresence>
           {items.map((item) => (
             <motion.div
-              key={item.productId}
+              key={item.bundleId ?? item.productId}
               layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -114,7 +114,7 @@ export default function CartPage() {
               className="flex gap-4 py-5"
             >
               <Link
-                href={`/products/${item.slug}`}
+                href={item.bundleId ? "/bundles" : `/products/${item.slug}`}
                 className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md bg-coal"
               >
                 <ProductImage
@@ -128,7 +128,7 @@ export default function CartPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <Link
-                      href={`/products/${item.slug}`}
+                      href={item.bundleId ? "/bundles" : `/products/${item.slug}`}
                       className="text-sm font-medium text-cream hover:text-bone"
                     >
                       {item.name}
@@ -149,7 +149,13 @@ export default function CartPage() {
                   <div className="flex items-center">
                     <button
                       onClick={() =>
-                        setQuantity(item.productId, item.quantityKg - 0.5)
+                        setQuantity(
+                          item.productId,
+                          item.quantityKg - 0.5,
+                        )
+                      }
+                      disabled={
+                        item.quantityKg <= (item.bundleMinKg ?? 0.01)
                       }
                       className="flex h-8 w-8 items-center justify-center border border-line text-sm text-bone hover:border-bone"
                     >
@@ -160,7 +166,10 @@ export default function CartPage() {
                     </span>
                     <button
                       onClick={() =>
-                        setQuantity(item.productId, item.quantityKg + 0.5)
+                        setQuantity(
+                          item.productId,
+                          item.quantityKg + 0.5,
+                        )
                       }
                       disabled={item.quantityKg >= item.stockKg}
                       className="flex h-8 w-8 items-center justify-center border border-line text-sm text-bone hover:border-bone disabled:opacity-30"

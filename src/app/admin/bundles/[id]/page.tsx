@@ -12,16 +12,11 @@ export default async function EditProductBundlePage({
 }) {
   const { id } = await params;
   const supabase = createAdminClient();
-  const [{ data: bundle }, { data: products }] = await Promise.all([
-    supabase
-      .from("product_bundles")
-      .select(
-        "*, product_bundle_items(id, bundle_id, product_id, quantity_kg, products(id, name, slug, price_per_kg, stock_kg, image_url, is_available))",
-      )
-      .eq("id", id)
-      .maybeSingle(),
-    supabase.from("products").select("id, name, is_available").order("name"),
-  ]);
+  const { data: bundle } = await supabase
+    .from("product_bundles")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
   if (!bundle) notFound();
 
   return (
@@ -29,7 +24,6 @@ export default async function EditProductBundlePage({
       <p className="eyebrow text-primary">Багц засах</p>
       <h1 className="mt-2 text-3xl text-display">{bundle.name}</h1>
       <ProductBundleForm
-        products={products ?? []}
         bundle={bundle as ProductBundle}
       />
     </div>

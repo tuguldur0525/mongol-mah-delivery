@@ -15,10 +15,16 @@ export const checkoutSchema = z.object({
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 
-export const cartItemSchema = z.object({
-  productId: z.string().uuid(),
-  quantityKg: z.number().positive().max(1000),
-});
+export const cartItemSchema = z.union([
+  z.object({
+    productId: z.string().uuid(),
+    quantityKg: z.number().positive().max(1000),
+  }),
+  z.object({
+    bundleId: z.string().uuid(),
+    quantityKg: z.number().positive().max(1000).multipleOf(0.01),
+  }),
+]);
 
 export const cartSchema = z.array(cartItemSchema).min(1, "Сагс хоосон байна");
 
@@ -37,20 +43,14 @@ export const productBundleSchema = z.object({
   name: z.string().trim().min(2, "Багцын нэр оруулна уу").max(100),
   description: z.string().trim().max(1000).optional().or(z.literal("")),
   image_url: z.string().trim().optional().or(z.literal("")),
+  price_per_kg: z.coerce.number().int().positive("Кг-ийн үнэ 0-ээс их байх ёстой"),
+  min_kg: z.coerce.number().positive("Хамгийн бага жинг оруулна уу").max(1000).multipleOf(0.01),
+  max_kg: z.coerce.number().positive("Хамгийн их жинг оруулна уу").max(1000).multipleOf(0.01),
   is_active: z.boolean(),
   sort_order: z.coerce.number().int().min(0),
-  items: z
-    .array(
-      z.object({
-        product_id: z.string().uuid(),
-        quantity_kg: z.coerce.number().positive().max(1000),
-      }),
-    )
-    .min(1, "Багцад бүтээгдэхүүн нэмнэ үү")
-    .refine(
-      (items) => new Set(items.map((item) => item.product_id)).size === items.length,
-      "Нэг бүтээгдэхүүнийг багцад давхар оруулах боломжгүй",
-    ),
+}).refine((bundle) => bundle.max_kg >= bundle.min_kg, {
+  message: "Хамгийн их жин нь хамгийн бага жингээс бага байж болохгүй",
+  path: ["max_kg"],
 });
 
 export const stockChangeSchema = z.object({

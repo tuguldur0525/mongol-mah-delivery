@@ -49,7 +49,11 @@ export default function CheckoutPage() {
     setError(null);
     const formData = new FormData(e.currentTarget);
     const cartJson = JSON.stringify(
-      items.map((i) => ({ productId: i.productId, quantityKg: i.quantityKg })),
+      items.map((item) =>
+        item.bundleId
+          ? { bundleId: item.bundleId, quantityKg: item.quantityKg }
+          : { productId: item.productId, quantityKg: item.quantityKg },
+      ),
     );
 
     startTransition(async () => {
@@ -133,13 +137,13 @@ export default function CheckoutPage() {
           <ul className="mt-3 divide-y divide-border">
             {items.map((i) => (
               <li
-                key={i.productId}
+                key={i.bundleId ?? i.productId}
                 className="flex justify-between py-2.5 text-sm"
               >
                 <span>
                   {i.name}{" "}
                   <span className="text-muted-foreground">
-                    × {formatKg(i.quantityKg)}
+                  × {formatKg(i.quantityKg)}
                   </span>
                 </span>
                 <span className="font-medium">

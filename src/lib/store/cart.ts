@@ -5,6 +5,8 @@ import { persist } from "zustand/middleware";
 
 export type CartItem = {
   productId: string;
+  bundleId?: string;
+  bundleMinKg?: number;
   slug: string;
   name: string;
   pricePerKg: number;
@@ -63,7 +65,13 @@ export const useCart = create<CartState>()(
           items: state.items
             .map((i) =>
               i.productId === productId
-                ? { ...i, quantityKg: Math.min(quantityKg, i.stockKg) }
+                ? {
+                    ...i,
+                    quantityKg: Math.max(
+                      i.bundleId ? (i.bundleMinKg ?? 0.01) : 0,
+                      Math.min(quantityKg, i.stockKg),
+                    ),
+                  }
                 : i,
             )
             .filter((i) => i.quantityKg > 0),

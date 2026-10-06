@@ -31,20 +31,15 @@ export async function saveProductBundle(
   formData: FormData,
 ) {
   const supabase = await requireAdmin();
-  let items: unknown;
-  try {
-    items = JSON.parse(String(formData.get("items") ?? ""));
-  } catch {
-    return { error: "Багцын бүтээгдэхүүний мэдээлэл буруу байна" };
-  }
-
   const parsed = productBundleSchema.safeParse({
     name: formData.get("name"),
     description: formData.get("description") ?? "",
     image_url: formData.get("image_url") ?? "",
+    price_per_kg: formData.get("price_per_kg"),
+    min_kg: formData.get("min_kg"),
+    max_kg: formData.get("max_kg"),
     is_active: formData.get("is_active") === "on",
     sort_order: formData.get("sort_order"),
-    items,
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
@@ -53,9 +48,11 @@ export async function saveProductBundle(
     p_name: parsed.data.name,
     p_description: parsed.data.description || null,
     p_image_url: parsed.data.image_url || null,
+    p_price_per_kg: parsed.data.price_per_kg,
+    p_min_kg: parsed.data.min_kg,
+    p_max_kg: parsed.data.max_kg,
     p_is_active: parsed.data.is_active,
     p_sort_order: parsed.data.sort_order,
-    p_items: parsed.data.items,
   });
   if (error || !data) {
     console.error("[bundles] save failed:", error);

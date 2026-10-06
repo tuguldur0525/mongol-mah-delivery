@@ -26,27 +26,18 @@ export type ProductWithCategory = Product & {
   categories: Pick<Category, "id" | "name" | "slug"> | null;
 };
 
-export type ProductBundleItem = {
-  id: string;
-  bundle_id: string;
-  product_id: string;
-  quantity_kg: number;
-  products: Pick<
-    Product,
-    "id" | "name" | "slug" | "price_per_kg" | "stock_kg" | "image_url" | "is_available"
-  > | null;
-};
-
 export type ProductBundle = {
   id: string;
   name: string;
   description: string | null;
   image_url: string | null;
+  price_per_kg: number;
+  min_kg: number;
+  max_kg: number;
   is_active: boolean;
   sort_order: number;
   created_at: string;
   updated_at: string;
-  product_bundle_items: ProductBundleItem[];
 };
 
 export type OrderPaymentStatus =
@@ -92,6 +83,10 @@ export type OrderItem = {
   id: string;
   order_id: string;
   product_id: string | null;
+  bundle_id: string | null;
+  is_bundle: boolean;
+  bundle_min_kg: number | null;
+  bundle_max_kg: number | null;
   product_name_snapshot: string;
   quantity_kg: number;
   price_per_kg: number;

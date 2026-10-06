@@ -2,6 +2,7 @@
 
 import "server-only";
 import { randomBytes } from "crypto";
+import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createOrderPayment } from "@/lib/wire/payments";
 import { checkoutSchema, cartSchema } from "@/lib/validations";
@@ -57,7 +58,7 @@ export async function createOrderAndPayment(
   }
 
   // 2. Validate cart structure
-  let cart: { productId: string; quantityKg: number }[];
+  let cart: z.infer<typeof cartSchema>;
   try {
     const raw = JSON.parse(cartJson);
     const parsed = cartSchema.safeParse(raw);
@@ -68,21 +69,50 @@ export async function createOrderAndPayment(
   }
 
   // 3. Fetch authoritative product data
-  const productIds = cart.map((i) => i.productId);
-  const { data: products, error } = await supabase
-    .from("products")
-    .select("id, name, slug, price_per_kg, stock_kg, is_available")
-    .in("id", productIds);
+  const productCart = cart.filter(
+    (item): item is Extract<(typeof cart)[number], { productId: string }> =>
+      "productId" in item,
+  );
+  const bundleCart = cart.filter(
+    (item): item is Extract<(typeof cart)[number], { bundleId: string }> =>
+      "bundleId" in item,
+  );
+  const { data: products, error: productError } = productCart.length
+    ? await supabase
+        .from("products")
+        .select("id, name, slug, price_per_kg, stock_kg, is_available")
+        .in("id", productCart.map((item) => item.productId))
+    : { data: [], error: null };
+  const { data: bundles, error: bundleError } = bundleCart.length
+    ? await supabase
+        .from("product_bundles")
+        .select(
+          "id, name, price_per_kg, min_kg, max_kg, is_active",
+        )
+        .in("id", bundleCart.map((item) => item.bundleId))
+    : { data: [], error: null };
 
-  if (error || !products || products.length !== cart.length) {
+  if (
+    productError ||
+    bundleError ||
+    !products ||
+    products.length !== productCart.length ||
+    !bundles ||
+    bundles.length !== bundleCart.length
+  ) {
     return { ok: false, error: "Бүтээгдэхүүн олдсонгүй. Сагсаа шалгана уу." };
   }
 
   const productMap = new Map(products.map((p: Pick<Product, "id">) => [p.id, p]));
+  const bundleMap = new Map(bundles.map((bundle) => [bundle.id, bundle]));
 
   let subtotal = 0;
   const items: {
-    product_id: string;
+    product_id: string | null;
+    bundle_id: string | null;
+    is_bundle: boolean;
+    bundle_min_kg: number | null;
+    bundle_max_kg: number | null;
     product_name_snapshot: string;
     quantity_kg: number;
     price_per_kg: number;
@@ -90,26 +120,59 @@ export async function createOrderAndPayment(
   }[] = [];
 
   for (const item of cart) {
-    const p = productMap.get(item.productId) as
-      | Pick<Product, "id" | "name" | "price_per_kg" | "stock_kg" | "is_available">
-      | undefined;
-    if (!p) return { ok: false, error: "Бүтээгдэхүүн олдсонгүй" };
-    if (!p.is_available) return { ok: false, error: `${p.name} одоогоор дууссан байна` };
-    if (p.stock_kg < item.quantityKg) {
-      return {
-        ok: false,
-        error: `${p.name} үлдэгдэл хүрэлцэхгүй байна (үлдсэн: ${p.stock_kg} кг)`,
-      };
+    if ("bundleId" in item) {
+      const bundle = bundleMap.get(item.bundleId);
+      if (!bundle || !bundle.is_active) {
+        return { ok: false, error: "Багц захиалах боломжгүй байна. Сагсаа шалгана уу." };
+      }
+      const minKg = Number(bundle.min_kg);
+      const maxKg = Number(bundle.max_kg);
+      if (item.quantityKg < minKg || item.quantityKg > maxKg) {
+        return {
+          ok: false,
+          error: `${bundle.name} ${minKg}–${maxKg} кг-ийн хооронд сонгоно уу`,
+        };
+      }
+      const pricePerKg = Number(bundle.price_per_kg);
+      const itemSubtotal = Math.round(pricePerKg * item.quantityKg);
+      subtotal += itemSubtotal;
+      items.push({
+        product_id: null,
+        bundle_id: bundle.id,
+        is_bundle: true,
+        bundle_min_kg: minKg,
+        bundle_max_kg: maxKg,
+        product_name_snapshot: bundle.name,
+        quantity_kg: item.quantityKg,
+        price_per_kg: pricePerKg,
+        subtotal: itemSubtotal,
+      });
+    } else {
+      const p = productMap.get(item.productId) as
+        | Pick<Product, "id" | "name" | "price_per_kg" | "stock_kg" | "is_available">
+        | undefined;
+      if (!p) return { ok: false, error: "Бүтээгдэхүүн олдсонгүй" };
+      if (!p.is_available) return { ok: false, error: `${p.name} одоогоор дууссан байна` };
+      if (p.stock_kg < item.quantityKg) {
+        return {
+          ok: false,
+          error: `${p.name} үлдэгдэл хүрэлцэхгүй байна (үлдсэн: ${p.stock_kg} кг)`,
+        };
+      }
+      const itemSubtotal = Math.round(p.price_per_kg * item.quantityKg);
+      subtotal += itemSubtotal;
+      items.push({
+        product_id: p.id,
+        bundle_id: null,
+        is_bundle: false,
+        bundle_min_kg: null,
+        bundle_max_kg: null,
+        product_name_snapshot: p.name,
+        quantity_kg: item.quantityKg,
+        price_per_kg: p.price_per_kg,
+        subtotal: itemSubtotal,
+      });
     }
-    const itemSubtotal = Math.round(p.price_per_kg * item.quantityKg);
-    subtotal += itemSubtotal;
-    items.push({
-      product_id: p.id,
-      product_name_snapshot: p.name,
-      quantity_kg: item.quantityKg,
-      price_per_kg: p.price_per_kg,
-      subtotal: itemSubtotal,
-    });
   }
 
   // 4. Delivery fee from store settings — free if >= 100,000₮
