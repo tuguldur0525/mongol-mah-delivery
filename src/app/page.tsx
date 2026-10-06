@@ -235,9 +235,7 @@ export default async function HomePage() {
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="eyebrow text-primary">Багц бүтээгдэхүүн</p>
-                <h2 className="mt-2 text-4xl text-display">
-                  Нэг дор бүрдүүлсэн мах
-                </h2>
+                <h2 className="mt-2 text-4xl text-display">Идэшний багцууд</h2>
               </div>
               <Link href="/bundles" className="btn-secondary">
                 Бүх багцыг үзэх
