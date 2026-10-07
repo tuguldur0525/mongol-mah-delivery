@@ -6,11 +6,7 @@ import { useCart } from "@/lib/store/cart";
 import { createOrderAndPayment } from "@/actions/orders";
 import { validatePromoCode } from "@/actions/promos";
 import type { PromoValidationResult } from "@/actions/promos";
-import {
-  calculatePromoDiscount,
-  formatMnt,
-  formatKg,
-} from "@/lib/validations";
+import { calculatePromoDiscount, formatMnt, formatKg } from "@/lib/validations";
 import { createClient } from "@/lib/supabase/client";
 import { FREE_DELIVERY_THRESHOLD, getDeliveryFee } from "@/lib/delivery";
 
@@ -21,9 +17,10 @@ export default function CheckoutPage() {
   const [redirecting, setRedirecting] = useState(false);
   const [configuredFee, setConfiguredFee] = useState(5000);
   const [promoInput, setPromoInput] = useState("");
-  const [appliedPromo, setAppliedPromo] = useState<
-    Extract<PromoValidationResult, { ok: true }> | null
-  >(null);
+  const [appliedPromo, setAppliedPromo] = useState<Extract<
+    PromoValidationResult,
+    { ok: true }
+  > | null>(null);
   const [promoError, setPromoError] = useState<string | null>(null);
   const [checkingPromo, startPromoCheck] = useTransition();
 
@@ -187,7 +184,7 @@ export default function CheckoutPage() {
                 <span>
                   {i.name}{" "}
                   <span className="text-muted-foreground">
-                  × {formatKg(i.quantityKg)}
+                    × {formatKg(i.quantityKg)}
                   </span>
                 </span>
                 <span className="font-medium">
@@ -207,7 +204,7 @@ export default function CheckoutPage() {
                   setAppliedPromo(null);
                   setPromoError(null);
                 }}
-                placeholder="Жишээ: OTGOO"
+                placeholder="PROMOCODE2026"
                 maxLength={32}
                 autoCapitalize="characters"
                 autoComplete="off"
