@@ -2,10 +2,15 @@
 
 import { useState, useTransition, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { useCart } from "@/lib/store/cart";
 import { createOrderAndPayment } from "@/actions/orders";
-import { formatMnt, formatKg } from "@/lib/validations";
+import { validatePromoCode } from "@/actions/promos";
+import type { PromoValidationResult } from "@/actions/promos";
+import {
+  calculatePromoDiscount,
+  formatMnt,
+  formatKg,
+} from "@/lib/validations";
 import { createClient } from "@/lib/supabase/client";
 import { FREE_DELIVERY_THRESHOLD, getDeliveryFee } from "@/lib/delivery";
 
@@ -15,6 +20,12 @@ export default function CheckoutPage() {
   const [pending, startTransition] = useTransition();
   const [redirecting, setRedirecting] = useState(false);
   const [configuredFee, setConfiguredFee] = useState(5000);
+  const [promoInput, setPromoInput] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState<
+    Extract<PromoValidationResult, { ok: true }> | null
+  >(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [checkingPromo, startPromoCheck] = useTransition();
 
   useEffect(() => {
     const supabase = createClient();
@@ -30,8 +41,43 @@ export default function CheckoutPage() {
 
   const cartTotal = subtotal();
   const deliveryFee = getDeliveryFee(cartTotal, configuredFee);
-  const totalWithDelivery = cartTotal + deliveryFee;
+  const discountAmount = appliedPromo
+    ? calculatePromoDiscount(
+        cartTotal,
+        appliedPromo.totalKg,
+        appliedPromo.discountPerKg,
+      )
+    : 0;
+  const totalWithDelivery = cartTotal - discountAmount + deliveryFee;
   const isFree = cartTotal >= FREE_DELIVERY_THRESHOLD;
+
+  const getCartJson = () =>
+    JSON.stringify(
+      items.map((item) =>
+        item.bundleId
+          ? { bundleId: item.bundleId, quantityKg: item.quantityKg }
+          : { productId: item.productId, quantityKg: item.quantityKg },
+      ),
+    );
+
+  const handleApplyPromo = () => {
+    setPromoError(null);
+    setAppliedPromo(null);
+    startPromoCheck(async () => {
+      const result = await validatePromoCode(promoInput, getCartJson());
+      if (!result.ok) {
+        setPromoError(result.error);
+        return;
+      }
+      setAppliedPromo(result);
+    });
+  };
+
+  const handleRemovePromo = () => {
+    setPromoInput("");
+    setAppliedPromo(null);
+    setPromoError(null);
+  };
 
   if (items.length === 0 && !redirecting) {
     return (
@@ -48,16 +94,14 @@ export default function CheckoutPage() {
     e.preventDefault();
     setError(null);
     const formData = new FormData(e.currentTarget);
-    const cartJson = JSON.stringify(
-      items.map((item) =>
-        item.bundleId
-          ? { bundleId: item.bundleId, quantityKg: item.quantityKg }
-          : { productId: item.productId, quantityKg: item.quantityKg },
-      ),
-    );
+    const cartJson = getCartJson();
 
     startTransition(async () => {
-      const result = await createOrderAndPayment(formData, cartJson);
+      const result = await createOrderAndPayment(
+        formData,
+        cartJson,
+        promoInput,
+      );
       if (result.ok) {
         // Keep cart until payment is confirmed — do NOT clear here.
         // Success page will clear after webhook marks paid, cancel/failed keeps cart.
@@ -152,11 +196,66 @@ export default function CheckoutPage() {
               </li>
             ))}
           </ul>
+          <div className="mt-4 border-t border-border pt-4">
+            <label htmlFor="promo_code">Промо код</label>
+            <div className="mt-1 flex gap-2">
+              <input
+                id="promo_code"
+                value={promoInput}
+                onChange={(event) => {
+                  setPromoInput(event.target.value.toUpperCase());
+                  setAppliedPromo(null);
+                  setPromoError(null);
+                }}
+                placeholder="Жишээ: OTGOO"
+                maxLength={32}
+                autoCapitalize="characters"
+                autoComplete="off"
+                className="min-w-0 flex-1"
+              />
+              {appliedPromo ? (
+                <button
+                  type="button"
+                  onClick={handleRemovePromo}
+                  className="btn-secondary shrink-0"
+                >
+                  Арилгах
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleApplyPromo}
+                  disabled={checkingPromo || !promoInput.trim()}
+                  className="btn-secondary shrink-0 disabled:opacity-50"
+                >
+                  {checkingPromo ? "Шалгаж байна..." : "Хэрэглэх"}
+                </button>
+              )}
+            </div>
+            {promoError && (
+              <p role="alert" className="mt-2 text-xs text-blood">
+                {promoError}
+              </p>
+            )}
+            {appliedPromo && (
+              <p role="status" className="mt-2 text-xs text-green-600">
+                {appliedPromo.code} код — {formatKg(appliedPromo.totalKg)} ×{" "}
+                {formatMnt(appliedPromo.discountPerKg)}/кг ={" "}
+                {formatMnt(discountAmount)} хямдрал.
+              </p>
+            )}
+          </div>
           <div className="mt-3 space-y-2 border-t border-border pt-3 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Бүтээгдэхүүн</span>
               <span>{formatMnt(cartTotal)}</span>
             </div>
+            {appliedPromo && (
+              <div className="flex justify-between text-green-600">
+                <span>Промо хямдрал ({appliedPromo.code})</span>
+                <span>−{formatMnt(discountAmount)}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-muted-foreground">Хүргэлт</span>
               {isFree ? (
@@ -192,7 +291,12 @@ export default function CheckoutPage() {
 
         <button
           type="submit"
-          disabled={pending || redirecting}
+          disabled={
+            pending ||
+            redirecting ||
+            (Boolean(promoInput.trim()) &&
+              appliedPromo?.code !== promoInput.trim().toUpperCase())
+          }
           className="btn-primary w-full"
         >
           {pending || redirecting ? "Төлбөр үүсгэж байна..." : "Төлбөр төлөх"}

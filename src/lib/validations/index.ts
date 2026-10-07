@@ -28,6 +28,23 @@ export const cartItemSchema = z.union([
 
 export const cartSchema = z.array(cartItemSchema).min(1, "Сагс хоосон байна");
 
+export const promoCodeFormSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^[A-Z0-9_-]{3,32}$/, "Промо код 3–32 үсэг, тоо эсвэл зураас байна"),
+  discount_per_kg: z.coerce
+    .number()
+    .int()
+    .positive("Кг тутмын хямдрал 0-ээс их байх ёстой"),
+  minimum_kg: z.coerce
+    .number()
+    .positive("Доод жинг 0-ээс их оруулна уу")
+    .max(10000)
+    .multipleOf(0.01),
+});
+
 export const productFormSchema = z.object({
   name: z.string().trim().min(2, "Нэр оруулна уу"),
   category_id: z.string().uuid("Ангилал сонгоно уу"),
@@ -87,4 +104,12 @@ export function formatKg(kg: number): string {
   return `${new Intl.NumberFormat("mn-MN", {
     maximumFractionDigits: 2,
   }).format(kg)} кг`;
+}
+
+export function calculatePromoDiscount(
+  subtotal: number,
+  totalKg: number,
+  discountPerKg: number,
+): number {
+  return Math.min(subtotal, Math.round(totalKg * discountPerKg));
 }

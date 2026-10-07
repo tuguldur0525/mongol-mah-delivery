@@ -64,6 +64,8 @@ export type Order = {
   address: string;
   note: string | null;
   subtotal: number;
+  promo_code: string | null;
+  discount_amount: number;
   delivery_fee: number;
   total_amount: number;
   currency: string;

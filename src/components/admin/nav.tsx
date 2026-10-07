@@ -8,6 +8,7 @@ const links = [
   { href: "/admin/orders", label: "Захиалга" },
   { href: "/admin/products", label: "Бүтээгдэхүүн" },
   { href: "/admin/bundles", label: "Багц" },
+  { href: "/admin/promos", label: "Промо код" },
   { href: "/admin/inventory", label: "Агуулах" },
   { href: "/admin/settings", label: "Тохиргоо" },
 ];

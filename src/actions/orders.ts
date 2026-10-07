@@ -5,7 +5,11 @@ import { randomBytes } from "crypto";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createOrderPayment } from "@/lib/wire/payments";
-import { checkoutSchema, cartSchema } from "@/lib/validations";
+import {
+  calculatePromoDiscount,
+  checkoutSchema,
+  cartSchema,
+} from "@/lib/validations";
 import type { OrderWithItems, Product } from "@/types";
 
 export type CheckoutResult =
@@ -43,6 +47,7 @@ function generateOrderNumber(): string {
 export async function createOrderAndPayment(
   formData: FormData,
   cartJson: string,
+  rawPromoCode = "",
 ): Promise<CheckoutResult> {
   const supabase = createAdminClient();
 
@@ -175,6 +180,48 @@ export async function createOrderAndPayment(
     }
   }
 
+  let promoCode: string | null = null;
+  let discountAmount = 0;
+  const normalizedPromoCode = rawPromoCode.trim().toUpperCase();
+  if (normalizedPromoCode) {
+    if (!/^[A-Z0-9_-]{3,32}$/.test(normalizedPromoCode)) {
+      return { ok: false, error: "Промо кодоо зөв оруулна уу" };
+    }
+
+    const { data: promo, error: promoError } = await supabase
+      .from("promo_codes")
+      .select("code, discount_per_kg, minimum_kg")
+      .eq("code", normalizedPromoCode)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (promoError) {
+      console.error("[promos] checkout lookup failed:", promoError);
+      return { ok: false, error: "Промо код шалгахад алдаа гарлаа. Дахин оролдоно уу." };
+    }
+    if (!promo) {
+      return { ok: false, error: "Промо код хүчингүй эсвэл идэвхгүй байна" };
+    }
+
+    const totalKg =
+      Math.round(
+        items.reduce((sum, item) => sum + item.quantity_kg, 0) * 100,
+      ) / 100;
+    const minimumKg = Number(promo.minimum_kg);
+    if (totalKg < minimumKg) {
+      return {
+        ok: false,
+        error: `${minimumKg} кг ба түүнээс дээш худалдан авалтад энэ код үйлчилнэ`,
+      };
+    }
+
+    promoCode = promo.code;
+    discountAmount = calculatePromoDiscount(
+      subtotal,
+      totalKg,
+      Number(promo.discount_per_kg),
+    );
+  }
+
   // 4. Delivery fee from store settings — free if >= 100,000₮
   const { data: settings } = await supabase
     .from("store_settings")
@@ -183,7 +230,7 @@ export async function createOrderAndPayment(
     .single();
   const configuredFee = settings?.delivery_fee ?? 0;
   const deliveryFee = subtotal >= 100_000 ? 0 : configuredFee;
-  const total = subtotal + deliveryFee;
+  const total = subtotal - discountAmount + deliveryFee;
 
   // 5. Create pending order + items
   const orderNumber = generateOrderNumber();
@@ -199,6 +246,8 @@ export async function createOrderAndPayment(
       address: parsedCustomer.data.address,
       note: parsedCustomer.data.note || null,
       subtotal,
+      promo_code: promoCode,
+      discount_amount: discountAmount,
       delivery_fee: deliveryFee,
       total_amount: total,
       currency: "MNT",

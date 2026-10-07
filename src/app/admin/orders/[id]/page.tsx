@@ -4,7 +4,6 @@ import { formatMnt } from "@/lib/validations";
 import {
   OrderTimeline,
   OrderItemsSummary,
-  ORDER_STATUS_LABELS,
   PAYMENT_STATUS_LABELS,
 } from "@/components/order/status";
 import type { OrderPaymentStatus } from "@/types";
@@ -66,6 +65,12 @@ export default async function AdminOrderDetailPage({
                 <span>Бүтээгдэхүүн</span>
                 <span>{formatMnt(order.subtotal)}</span>
               </div>
+              {order.discount_amount > 0 && (
+                <div className="flex justify-between text-fresh">
+                  <span>Промо хямдрал{order.promo_code ? ` (${order.promo_code})` : ""}</span>
+                  <span>−{formatMnt(order.discount_amount)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-mute">
                 <span>Хүргэлт</span>
                 <span>{formatMnt(order.delivery_fee)}</span>
